@@ -4,9 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
@@ -16,10 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.io.File
+import com.wyj.voice.viewmodle.LocalMusicViewModel
 import java.io.IOException
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
 
 
 /**
@@ -46,6 +43,8 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
     private var sbTime: AppCompatSeekBar? = null
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
+    private var musicViewModel: LocalMusicViewModel? = null
+    private var playingIndex = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_music)
@@ -56,7 +55,11 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
         tvTotalTime = findViewById<TextView>(R.id.tv_total_time)
         sbTime = findViewById<AppCompatSeekBar>(R.id.sb_time).apply {
             setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     mediaPlayer?.let {
                         val duration = it.duration / 1000//获取音乐总时长
                         val position = it.currentPosition//获取当前播放的位置
@@ -78,6 +81,16 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
                     }
                 }
             })
+        }
+
+        musicViewModel = LocalMusicViewModel(this).apply {
+            songs.observe(this@PlayMusicActivity) {
+                for (song in it) {
+                    val path = song.path
+                    Log.d(TAG, "onCreate: path:$path")
+                }
+            }
+            getLocalSongs()
         }
     }
 
@@ -125,7 +138,9 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
                         REQ_PER_CODE
                     )
                 } else {
-                    initPlayerAndPlay()
+                    if (musicViewModel?.songs?.value?.isNotEmpty() == true) {
+                        initPlayerAndPlay()
+                    }
                 }
             }
 
@@ -151,9 +166,9 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
 
     private fun initPlayerAndPlay() {
         createPlayerAndInit()
-
         mediaPlayer?.apply {
             if (!isPlaying) {
+                reset()
                 prepareToPlay()
                 try {
                     start()
@@ -173,8 +188,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
                 timerTask = object : TimerTask() {
                     override fun run() {
                         runOnUiThread {
-                            Log.d(TAG, "run: isSeekbarChanging:$isSeekbarChanging")
-                            if(!isSeekbarChanging){
+                            if (!isSeekbarChanging) {
                                 try {
                                     sbTime?.progress = currentPosition
                                 } catch (e: IllegalStateException) {
@@ -204,12 +218,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
 
     private fun MediaPlayer.prepareToPlay() {
         try {
-            setDataSource(this@PlayMusicActivity, Uri.fromFile(File(
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                        "banana.mp3"
-                    )
-                )
-            )
+            setDataSource(musicViewModel?.songs?.value!![playingIndex].path)
         } catch (e: IOException) {
             Log.d(TAG, "prepareToPlay: setDataSource error e:${e.message}")
         } catch (e: IllegalArgumentException) {
@@ -253,6 +262,13 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
             Log.d(TAG, "onCompletion: it is playing? ${it.isPlaying}")
         }
         timerTask?.cancel()
+        musicViewModel?.songs?.value?.let {
+            var newIndex = playingIndex + 1
+            if (newIndex >= it.size) {
+                newIndex = 0
+            }
+            playingIndex = newIndex
+        }
     }
 
     override fun onDestroy() {
@@ -268,5 +284,11 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
             timerTask = null
         }
         timer = null
+        musicViewModel?.let {
+            if (it.comDisposable.isDisposed) {
+                it.comDisposable.dispose()
+                musicViewModel = null
+            }
+        }
     }
 }
