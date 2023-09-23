@@ -1,4 +1,4 @@
-package com.wyj.voice
+package com.wyj.voice.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.wyj.voice.R
 import com.wyj.voice.viewmodle.LocalMusicViewModel
 import java.io.IOException
 import java.util.*
@@ -287,6 +288,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
         musicViewModel?.let {
             if (it.comDisposable.isDisposed) {
                 it.comDisposable.dispose()
+                it.comDisposable.clear()
                 musicViewModel = null
             }
         }
