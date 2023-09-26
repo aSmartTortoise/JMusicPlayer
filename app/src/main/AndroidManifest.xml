@@ -15,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VoicePlay"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.TrampolineActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <service
             android:name=".player.PlaybackService"
             android:enabled="true"
@@ -23,6 +28,7 @@
         <activity
             android:name=".ui.MusicPlayerActivity"
             android:exported="false"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.MusicPlayer">
             <meta-data
                 android:name="android.app.lib_name"

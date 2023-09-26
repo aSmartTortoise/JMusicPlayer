@@ -40,7 +40,7 @@ interface IPlayback {
     interface Callback {
         fun onSwitchLast(last: Song)
         fun onSwitchNext(next: Song)
-        fun onComplete( next: Song)
+        fun onComplete( next: Song?)
         fun onPlayStatusChanged(isPlaying: Boolean)
     }
 }

@@ -167,7 +167,6 @@ class Player private constructor(): IPlayback, MediaPlayer.OnCompletionListener 
         playList?.playMode = playMode
     }
 
-    // Listeners
 
     // Listeners
     override fun onCompletion(mp: MediaPlayer?) {
@@ -191,9 +190,7 @@ class Player private constructor(): IPlayback, MediaPlayer.OnCompletionListener 
             }
         }
 
-        next?.let {
-            notifyComplete(it)
-        }
+        notifyComplete(next)
     }
 
     override fun releasePlayer() {
@@ -238,7 +235,7 @@ class Player private constructor(): IPlayback, MediaPlayer.OnCompletionListener 
         }
     }
 
-    private fun notifyComplete(song: Song) {
+    private fun notifyComplete(song: Song?) {
         for (callback in callbacks) {
             callback.onComplete(song)
         }

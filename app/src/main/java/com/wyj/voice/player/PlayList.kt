@@ -20,56 +20,20 @@ class PlayList() {
     }
 
     var id = 0
-        get() = field
-        set(value) {
-            field = value
-        }
     var name: String? = null
-        get() = field
-        set(value) {
-            field = value
-        }
 
     var numOfSongs = 0
-        get() = field
-        set(value) {
-            field = value
-        }
 
     var favorite = false
-        get() = field
-        set(value) {
-            field = value
-        }
 
     var createdAt: Date? = null
-        get() = field
-        set(value) {
-            field = value
-        }
 
     var updatedAt: Date? = null
-        get() = field
-        set(value) {
-            field = value
-        }
     var playingIndex = -1
-        get() = field
-        set(value) {
-            field = value
-        }
     var songs: MutableList<Song> = mutableListOf()
-        get() = field
-        set(value) {
-            field = value
-        }
     var playMode = PlayMode.LOOP
-        get() = field
-        set(value) {
-            field = value
-        }
 
-    public constructor(song: Song): this() {
+    constructor(song: Song): this() {
         songs.add(song)
         numOfSongs = 1
     }
@@ -202,6 +166,4 @@ class PlayList() {
         }
         return randomIndex
     }
-
-
 }

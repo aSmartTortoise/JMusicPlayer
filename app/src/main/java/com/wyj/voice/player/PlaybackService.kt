@@ -8,12 +8,14 @@ import android.graphics.Color
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.wyj.voice.R
 import com.wyj.voice.model.Song
 import com.wyj.voice.ui.MusicPlayerActivity
+import com.wyj.voice.ui.TrampolineActivity
 import com.wyj.voice.utils.AlbumUtils
 
 class PlaybackService : Service(), IPlayback, IPlayback.Callback {
@@ -25,6 +27,7 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
         private const val ACTION_STOP_SERVICE = "io.github.ryanhoo.music.ACTION.STOP_SERVICE"
 
         private const val NOTIFICATION_ID = 1
+        private const val TAG = "PlaybackService"
     }
 
     private lateinit var player: Player
@@ -33,16 +36,19 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d(TAG, "onCreate: wyj")
         player = Player.getInstance().apply {
             registerCallback(this@PlaybackService)
         }
     }
 
     override fun onBind(intent: Intent): IBinder {
+        Log.d(TAG, "onBind: wyj")
         return LocalBinder()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(TAG, "onStartCommand: wyj")
         if (intent != null) {
             val action = intent.action
             if (ACTION_PLAY_TOGGLE == action) {
@@ -159,7 +165,7 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
         showNotification()
     }
 
-    override fun onComplete(next: Song) {
+    override fun onComplete(next: Song?) {
         showNotification()
     }
 
@@ -173,13 +179,19 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
      */
     private fun showNotification() {
         // The PendingIntent to launch our activity if the user selects this notification
-        var flag = PendingIntent.FLAG_ONE_SHOT
+        var flag = PendingIntent.FLAG_UPDATE_CURRENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            flag = PendingIntent.FLAG_IMMUTABLE
+            flag = flag or PendingIntent.FLAG_IMMUTABLE
         }
-        val contentIntent =
-            PendingIntent.getActivity(this, 0,
-                Intent(this, MusicPlayerActivity::class.java), flag)
+        val intent = Intent(this, TrampolineActivity::class.java)
+        // https://juejin.cn/post/7171795137734344718
+        // 通过TaskStackBuilder构建PendingIntent，结合SingleTask，使得点击通知栏能拉起同一个Activity实例。
+//        val contentIntent = TaskStackBuilder.create(this).run {
+//            addNextIntentWithParentStack(intent)
+//            getPendingIntent(0, flag)
+//        }
+
+        val contentIntent = PendingIntent.getActivity(this, 0, intent, flag)
 
         val channelId =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -189,7 +201,6 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
                 // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
                 ""
             }
-
         // Set the info for the views that show in the notification panel.
         val notification: Notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification_app_logo) // the status icon
