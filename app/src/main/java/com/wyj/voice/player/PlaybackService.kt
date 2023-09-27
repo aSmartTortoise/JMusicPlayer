@@ -184,47 +184,33 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
             flag = flag or PendingIntent.FLAG_IMMUTABLE
         }
         val intent = Intent(this, TrampolineActivity::class.java)
-        // https://juejin.cn/post/7171795137734344718
-        // 通过TaskStackBuilder构建PendingIntent，结合SingleTask，使得点击通知栏能拉起同一个Activity实例。
-//        val contentIntent = TaskStackBuilder.create(this).run {
-//            addNextIntentWithParentStack(intent)
-//            getPendingIntent(0, flag)
-//        }
-
         val contentIntent = PendingIntent.getActivity(this, 0, intent, flag)
 
-        val channelId =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                createNotificationChannel("my_service", "My Background Service")
-            } else {
-                // If earlier version channel ID is not used
-                // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
-                ""
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "my_service"
+            val chan = NotificationChannel(
+                channelId,
+                "My Background Service", NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                lightColor = Color.BLUE
+                lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
-        // Set the info for the views that show in the notification panel.
-        val notification: Notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_notification_app_logo) // the status icon
-            .setWhen(System.currentTimeMillis()) // the time stamp
-            .setContentIntent(contentIntent) // The intent to send when the entry is clicked
-            .setCustomContentView(getSmallContentView())
-            .setCustomBigContentView(getBigContentView())
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setOngoing(true)
-            .build()
-
-        // Send the notification.
-        startForeground(NOTIFICATION_ID, notification)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel(channelId: String, channelName: String): String{
-        val chan = NotificationChannel(channelId,
-            channelName, NotificationManager.IMPORTANCE_NONE)
-        chan.lightColor = Color.BLUE
-        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-        val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        service.createNotificationChannel(chan)
-        return channelId
+            val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            service.createNotificationChannel(chan)
+            // Set the info for the views that show in the notification panel.
+            val notification: Notification = NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_notification_app_logo) // the status icon
+                .setWhen(System.currentTimeMillis()) // the time stamp
+                .setContentIntent(contentIntent) // The intent to send when the entry is clicked
+                .setCustomContentView(getSmallContentView())
+                .setCustomBigContentView(getBigContentView())
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setOngoing(true)
+                .build()
+            // Send the notification.
+            startForeground(NOTIFICATION_ID, notification)
+        }
     }
 
     private fun getSmallContentView(): RemoteViews? {

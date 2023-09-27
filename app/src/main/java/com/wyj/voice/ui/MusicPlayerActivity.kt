@@ -1,31 +1,32 @@
 package com.wyj.voice.ui
 
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMusicPlayerBinding
-import com.wyj.voice.manager.AppWindowManager
 import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
 import com.wyj.voice.player.PlayList
-import com.wyj.voice.receiver.PlayerReceiver
 import com.wyj.voice.utils.AlbumUtils
+import com.wyj.voice.utils.BarUtils
 import com.wyj.voice.utils.GradientUtils
 import com.wyj.voice.utils.TimeUtils
 import com.wyj.voice.viewmodle.LocalMusicViewModel
 import com.wyj.voice.viewmodle.MusicPlayerViewModel
 import java.util.*
+
 
 class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     companion object {
@@ -37,7 +38,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
     private var player: IPlayback? = null
-    private var playerReceiver: PlayerReceiver? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -53,8 +53,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         )
         window.setBackgroundDrawable(gradientBackgroundDrawable)
         window.setFormat(PixelFormat.RGBA_8888)
-
-//        AppWindowManager.transparentNavBar(window)
+        BarUtils.transparentNavBar(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,19 +97,10 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                         registerCallback(this@MusicPlayerActivity)
                     }
                     playSong(localSongs)
-                    registerPlayerReceiver()
                 }
                 subscribe()
             }
         }
-    }
-
-    private fun registerPlayerReceiver() {
-        playerReceiver = PlayerReceiver()
-        val intentFilter = IntentFilter().apply {
-            addAction("to_music_player")
-        }
-        registerReceiver(playerReceiver, intentFilter)
     }
 
     private fun playSong(song: Song) {
@@ -264,9 +254,5 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         }
         timer = null
 
-        playerReceiver?.let {
-            unregisterReceiver(playerReceiver)
-            playerReceiver = null
-        }
     }
 }
