@@ -65,12 +65,12 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="@dimen/dp_24"
-            tools:text="00:00"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_12"
             app:layout_constraintBottom_toTopOf="@id/button_play_toggle"
             app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="00:00" />
 
         <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/seek_bar"
@@ -90,56 +90,56 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            tools:text="10:00"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_12"
             app:layout_constraintBottom_toBottomOf="@id/tv_progress"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_progress" />
+            app:layout_constraintTop_toTopOf="@id/tv_progress"
+            tools:text="10:00" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:onClick="@{() -> playerViewModel.onPlayToggleAction()}"
             android:id="@+id/button_play_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dp_28"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{() -> playerViewModel.onPlayToggleAction()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/ic_play" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:onClick="@{() -> playerViewModel.playLast()}"
             android:id="@+id/button_play_last"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_24"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{() -> playerViewModel.playLast()}"
             app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
             app:layout_constraintEnd_toStartOf="@id/button_play_toggle"
             app:layout_constraintTop_toTopOf="@id/button_play_toggle"
             app:srcCompat="@drawable/ic_play_last" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:onClick="@{() -> playerViewModel.onPlayModeToggleAction()}"
             android:id="@+id/button_play_mode_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_24"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{() -> playerViewModel.onPlayModeToggleAction()}"
             app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
             app:layout_constraintEnd_toStartOf="@id/button_play_last"
             app:layout_constraintTop_toTopOf="@id/button_play_toggle"
             app:srcCompat="@drawable/ic_play_mode_shuffle" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:onClick="@{() -> playerViewModel.playNext()}"
             android:id="@+id/button_play_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_24"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{() -> playerViewModel.playNext()}"
             app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
             app:layout_constraintStart_toEndOf="@id/button_play_toggle"
             app:layout_constraintTop_toTopOf="@id/button_play_toggle"

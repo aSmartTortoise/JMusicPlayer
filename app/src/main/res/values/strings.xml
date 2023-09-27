@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">JMusicPlayer</string>
+    <string name="action_play_toggle">com.wyj.voice.ACTION.PLAY_TOGGLE</string>
+    <string name="action_play_last">com.wyj.voice.ACTION.PLAY_LAST</string>
+    <string name="action_play_next">com.wyj.voice.ACTION.PLAY_NEXT</string>
+    <string name="action_stop_service">com.wyj.voice.ACTION.STOP_SERVICE</string>
 </resources>

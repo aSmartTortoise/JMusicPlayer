@@ -21,18 +21,13 @@ import com.wyj.voice.utils.AlbumUtils
 class PlaybackService : Service(), IPlayback, IPlayback.Callback {
 
     companion object {
-        private const val ACTION_PLAY_TOGGLE = "io.github.ryanhoo.music.ACTION.PLAY_TOGGLE"
-        private const val ACTION_PLAY_LAST = "io.github.ryanhoo.music.ACTION.PLAY_LAST"
-        private const val ACTION_PLAY_NEXT = "io.github.ryanhoo.music.ACTION.PLAY_NEXT"
-        private const val ACTION_STOP_SERVICE = "io.github.ryanhoo.music.ACTION.STOP_SERVICE"
-
         private const val NOTIFICATION_ID = 1
         private const val TAG = "PlaybackService"
     }
 
     private lateinit var player: Player
     private var mContentViewBig: RemoteViews? = null
-    private var mContentViewSmall:RemoteViews? = null
+    private var mContentViewSmall: RemoteViews? = null
     private var registerPlaybackCallback: Boolean = false
 
     override fun onCreate() {
@@ -49,27 +44,33 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
         return LocalBinder()
     }
 
+    override fun onRebind(intent: Intent?) {
+        Log.d(TAG, "onRebind: wyj")
+        super.onRebind(intent)
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
             val action = intent.action
             Log.d(TAG, "onStartCommand: wyj action:$action")
-            if (ACTION_PLAY_TOGGLE == action) {
-                if (isPlaying()) {
-                    pause()
-                } else {
-                    play()
+            when (action) {
+                getString(R.string.action_play_toggle) -> {
+                    if (isPlaying()) {
+                        pause()
+                    } else {
+                        play()
+                    }
                 }
-            } else if (ACTION_PLAY_NEXT == action) {
-                playNext()
-            } else if (ACTION_PLAY_LAST == action) {
-                playLast()
-            } else if (ACTION_STOP_SERVICE == action) {
-                if (isPlaying()) {
-                    pause()
+                getString(R.string.action_play_next) -> playNext()
+                getString(R.string.action_play_last) -> playLast()
+                getString(R.string.action_stop_service) -> {
+                    if (isPlaying()) {
+                        pause()
+                    }
+                    stopForeground(true)
+                    unregisterCallback(this)
+                    registerPlaybackCallback = false
                 }
-                stopForeground(true)
-                unregisterCallback(this)
-                registerPlaybackCallback = false
             }
         }
         return START_STICKY
@@ -257,18 +258,21 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
             R.id.image_view_play_next,
             R.drawable.ic_remote_view_play_next
         )
-        remoteView.setOnClickPendingIntent(R.id.button_close, getPendingIntent(ACTION_STOP_SERVICE))
+        remoteView.setOnClickPendingIntent(
+            R.id.button_close,
+            getPendingIntent(getString(R.string.action_stop_service))
+        )
         remoteView.setOnClickPendingIntent(
             R.id.button_play_last,
-            getPendingIntent(ACTION_PLAY_LAST)
+            getPendingIntent(getString(R.string.action_play_last))
         )
         remoteView.setOnClickPendingIntent(
             R.id.button_play_next,
-            getPendingIntent(ACTION_PLAY_NEXT)
+            getPendingIntent(getString(R.string.action_play_next))
         )
         remoteView.setOnClickPendingIntent(
             R.id.button_play_toggle,
-            getPendingIntent(ACTION_PLAY_TOGGLE)
+            getPendingIntent(getString(R.string.action_play_toggle))
         )
     }
 

@@ -61,10 +61,10 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_music_player)
         musicViewModel = LocalMusicViewModel(this).apply {
             songs.observe(this@MusicPlayerActivity) {
-                subscribeService(it)
             }
             getLocalSongs()
         }
+        subscribeService()
         dataBinding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -88,22 +88,22 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         })
     }
 
-    private fun subscribeService(localSongs: List<Song>) {
-        if (player == null) {
-            playerViewModel = MusicPlayerViewModel(this).apply {
-                playbackServiceLiveData.observe(this@MusicPlayerActivity) {
-                    player = it.apply {
-                        registerCallback(this@MusicPlayerActivity)
-                    }
-                    playSong(localSongs)
+    private fun subscribeService() {
+        playerViewModel = MusicPlayerViewModel(this).apply {
+            playbackServiceLiveData.observe(this@MusicPlayerActivity) {
+                Log.d(TAG, "subscribeService: wyj player:$it")
+                player = it.apply {
+                    registerCallback(this@MusicPlayerActivity)
                 }
-                playModeLiveData.observe(this@MusicPlayerActivity) {
-                    updatePlayMode(it)
-                }
-                subscribe()
+                onSongUpdated(player?.getPlayingSong())
+                updatePlayMode(PreferenceManager.lastPlayMode(context!!))
             }
-            dataBinding.playerViewModel = playerViewModel
+            playModeLiveData.observe(this@MusicPlayerActivity) {
+                updatePlayMode(it)
+            }
+            subscribe()
         }
+        dataBinding.playerViewModel = playerViewModel
     }
 
     private fun playSong(song: Song) {
@@ -155,6 +155,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             dataBinding.siv.setImageBitmap(AlbumUtils.getCroppedBitmap(bitmap))
         }
         dataBinding.siv.pauseRotateAnimation()
+        Log.d(TAG, "onSongUpdated: wyj isPlaying:${player?.isPlaying()}")
         if (player?.isPlaying() == true) {
             dataBinding.siv.startRotateAnimation()
             scheduleTask()
@@ -215,7 +216,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         return duration
     }
 
-    fun updatePlayMode(playMode: PlayMode) {
+    private fun updatePlayMode(playMode: PlayMode) {
         val res = when (playMode) {
             PlayMode.LIST -> R.drawable.ic_play_mode_list
             PlayMode.LOOP -> R.drawable.ic_play_mode_loop
