@@ -23,7 +23,14 @@
         <service
             android:name=".player.PlaybackService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="io.github.ryanhoo.music.ACTION.PLAY_TOGGLE"/>
+                <action android:name="io.github.ryanhoo.music.ACTION.PLAY_NEXT"/>
+                <action android:name="io.github.ryanhoo.music.ACTION.PLAY_LAST"/>
+                <action android:name="io.github.ryanhoo.music.ACTION.STOP_SERVICE"/>
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".ui.MusicPlayerActivity"

@@ -6,11 +6,9 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.wyj.voice.R
@@ -19,12 +17,13 @@ import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
 import com.wyj.voice.player.PlayList
+import com.wyj.voice.player.PlayMode
 import com.wyj.voice.utils.AlbumUtils
 import com.wyj.voice.utils.BarUtils
 import com.wyj.voice.utils.GradientUtils
 import com.wyj.voice.utils.TimeUtils
-import com.wyj.voice.viewmodle.LocalMusicViewModel
-import com.wyj.voice.viewmodle.MusicPlayerViewModel
+import com.wyj.voice.viewModel.LocalMusicViewModel
+import com.wyj.voice.viewModel.MusicPlayerViewModel
 import java.util.*
 
 
@@ -98,8 +97,12 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                     }
                     playSong(localSongs)
                 }
+                playModeLiveData.observe(this@MusicPlayerActivity) {
+                    updatePlayMode(it)
+                }
                 subscribe()
             }
+            dataBinding.playerViewModel = playerViewModel
         }
     }
 
@@ -179,7 +182,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     dataBinding.seekBar.setProgress(progress, true)
                                 } else {
-                                    dataBinding.seekBar.setProgress(progress)
+                                    dataBinding.seekBar.progress = progress
                                 }
                             }
                         }
@@ -189,7 +192,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         }
         timer?.schedule(timerTask, 0, 50)
     }
-
 
     private fun updateProgressTextWithProgress(progress: Int) {
         val targetDuration: Int = getDuration(progress)
@@ -213,14 +215,26 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         return duration
     }
 
+    fun updatePlayMode(playMode: PlayMode) {
+        val res = when (playMode) {
+            PlayMode.LIST -> R.drawable.ic_play_mode_list
+            PlayMode.LOOP -> R.drawable.ic_play_mode_loop
+            PlayMode.SHUFFLE -> R.drawable.ic_play_mode_shuffle
+            PlayMode.SINGLE -> R.drawable.ic_play_mode_single
+        }
+        dataBinding.buttonPlayModeToggle.setImageResource(res)
+    }
+
     private fun seekTo(duration: Int) {
         player?.seekTo(duration)
     }
 
     override fun onSwitchLast(last: Song) {
+        onSongUpdated(last)
     }
 
     override fun onSwitchNext(next: Song) {
+        onSongUpdated(next)
     }
 
     override fun onComplete(next: Song?) {
@@ -228,7 +242,17 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     }
 
     override fun onPlayStatusChanged(isPlaying: Boolean) {
-
+        dataBinding.buttonPlayToggle.setImageResource(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
+        if (isPlaying) {
+            dataBinding.siv.resumeRotateAnimation()
+            scheduleTask()
+        } else {
+            dataBinding.siv.pauseRotateAnimation()
+            timerTask?.let {
+                it.cancel()
+                timerTask = null
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -245,6 +269,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         if (player != null && playerViewModel != null) {
             playerViewModel?.unsubscribe()
             playerViewModel = null
+            player?.unregisterCallback(this)
             player = null
         }
 
@@ -253,6 +278,5 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             timerTask = null
         }
         timer = null
-
     }
 }

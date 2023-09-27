@@ -60,7 +60,6 @@ public class ShadowImageView extends AppCompatImageView {
         init();
     }
 
-
     private void init() {
         final float density = getContext().getResources().getDisplayMetrics().density;
         final int shadowXOffset = (int) (density * X_OFFSET);

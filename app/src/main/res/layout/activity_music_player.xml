@@ -5,6 +5,10 @@
 
     <data>
 
+        <variable
+            name="playerViewModel"
+            type="com.wyj.voice.viewModel.MusicPlayerViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,6 +98,7 @@
             app:layout_constraintTop_toTopOf="@id/tv_progress" />
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:onClick="@{() -> playerViewModel.onPlayToggleAction()}"
             android:id="@+id/button_play_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,6 +110,7 @@
             app:srcCompat="@drawable/ic_play" />
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:onClick="@{() -> playerViewModel.playLast()}"
             android:id="@+id/button_play_last"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -116,6 +122,7 @@
             app:srcCompat="@drawable/ic_play_last" />
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:onClick="@{() -> playerViewModel.onPlayModeToggleAction()}"
             android:id="@+id/button_play_mode_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -127,6 +134,7 @@
             app:srcCompat="@drawable/ic_play_mode_shuffle" />
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:onClick="@{() -> playerViewModel.playNext()}"
             android:id="@+id/button_play_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

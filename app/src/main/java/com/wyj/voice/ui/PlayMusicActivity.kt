@@ -15,7 +15,7 @@ import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.wyj.voice.R
-import com.wyj.voice.viewmodle.LocalMusicViewModel
+import com.wyj.voice.viewModel.LocalMusicViewModel
 import java.io.IOException
 import java.util.*
 

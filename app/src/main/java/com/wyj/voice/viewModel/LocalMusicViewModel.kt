@@ -1,6 +1,5 @@
-package com.wyj.voice.viewmodle
+package com.wyj.voice.viewModel
 
-import android.annotation.SuppressLint
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore

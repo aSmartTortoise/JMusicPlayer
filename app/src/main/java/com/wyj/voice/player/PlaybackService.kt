@@ -32,13 +32,15 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
 
     private lateinit var player: Player
     private var mContentViewBig: RemoteViews? = null
-    private  var mContentViewSmall:RemoteViews? = null
+    private var mContentViewSmall:RemoteViews? = null
+    private var registerPlaybackCallback: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate: wyj")
         player = Player.getInstance().apply {
             registerCallback(this@PlaybackService)
+            registerPlaybackCallback = true
         }
     }
 
@@ -48,9 +50,9 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "onStartCommand: wyj")
         if (intent != null) {
             val action = intent.action
+            Log.d(TAG, "onStartCommand: wyj action:$action")
             if (ACTION_PLAY_TOGGLE == action) {
                 if (isPlaying()) {
                     pause()
@@ -67,14 +69,28 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
                 }
                 stopForeground(true)
                 unregisterCallback(this)
+                registerPlaybackCallback = false
             }
         }
         return START_STICKY
     }
 
+    fun registerPlaybackCallback() {
+        if (!registerPlaybackCallback) {
+            player.registerCallback(this@PlaybackService)
+            registerPlaybackCallback = true
+        }
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.d(TAG, "onUnbind: wyj")
+        return super.onUnbind(intent)
+    }
+
     override fun stopService(name: Intent?): Boolean {
         stopForeground(true)
         unregisterCallback(this)
+        registerPlaybackCallback = true
         return super.stopService(name)
     }
 
@@ -84,7 +100,6 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     }
 
     inner class LocalBinder : Binder() {
-
         val service: PlaybackService
             get() = this@PlaybackService
     }
@@ -114,6 +129,7 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     }
 
     override fun playNext(): Boolean {
+        Log.d(TAG, "playNext: wyj")
         return player.playNext()
     }
 
@@ -276,7 +292,7 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
 
     // PendingIntent
     private fun getPendingIntent(action: String): PendingIntent {
-        var flag = PendingIntent.FLAG_ONE_SHOT
+        var flag = PendingIntent.FLAG_UPDATE_CURRENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             flag = PendingIntent.FLAG_IMMUTABLE
         }

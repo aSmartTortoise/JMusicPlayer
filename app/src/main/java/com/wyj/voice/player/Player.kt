@@ -47,6 +47,7 @@ class Player private constructor(): IPlayback, MediaPlayer.OnCompletionListener 
 
     override fun play(): Boolean {
         if (paused) {
+            paused = false
             player!!.start()
             notifyPlayStatusChanged(true)
             return true
@@ -128,7 +129,7 @@ class Player private constructor(): IPlayback, MediaPlayer.OnCompletionListener 
     override fun pause(): Boolean {
         player?.let {
             if (isPlaying()) {
-                pause()
+                it.pause()
                 paused = true
                 notifyPlayStatusChanged(false)
                 return true
