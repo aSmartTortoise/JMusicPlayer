@@ -35,6 +35,7 @@
         <attr name="background" format="reference" />
         <attr name="middleTextVisible" format="boolean" />
         <attr name="rightIconVisible" format="boolean" />
+        <attr name="leftIconVisible" format="boolean" />
         <attr name="showDividerLine" format="boolean" />
     </declare-styleable>
 </resources>

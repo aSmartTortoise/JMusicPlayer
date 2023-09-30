@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/dp_16"
-        tools:background="@color/mp.theme.dark_blue.actionMode.background"
+        tools:background="@color/color_primary"
         tools:context=".ui.MusicPlayerActivity">
 
         <com.wyj.voice.view.ShadowImageView

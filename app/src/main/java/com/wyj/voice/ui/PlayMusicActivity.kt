@@ -34,7 +34,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
     MediaPlayer.OnCompletionListener {
     companion object {
         const val TAG = "PlayMusicActivity"
-        const val REQ_PER_CODE = 1;
+        const val REQ_PER_CODE = 1
     }
 
     var mediaPlayer: MediaPlayer? = null

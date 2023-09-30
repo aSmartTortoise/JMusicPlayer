@@ -150,6 +150,11 @@ class TitleBar @JvmOverloads constructor(
                     val visible = if (show) VISIBLE else GONE
                     mBinding.dividerLine.visibility = visible
                 }
+                R.styleable.TitleBar_leftIconVisible -> {
+                    val show = array.getBoolean(attr, true)
+                    val visible = if (show) VISIBLE else GONE
+                    mBinding.ivLeftIcon.visibility = visible
+                }
             }
         }
         array.recycle()
