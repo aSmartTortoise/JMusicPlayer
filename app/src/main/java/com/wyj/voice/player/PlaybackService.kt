@@ -10,11 +10,9 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.widget.RemoteViews
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.wyj.voice.R
 import com.wyj.voice.model.Song
-import com.wyj.voice.ui.MusicPlayerActivity
 import com.wyj.voice.ui.TrampolineActivity
 import com.wyj.voice.utils.AlbumUtils
 
@@ -207,24 +205,26 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
             val channelId = "my_service"
             val chan = NotificationChannel(
                 channelId,
-                "My Background Service", NotificationManager.IMPORTANCE_HIGH
+                "My Background Service", NotificationManager.IMPORTANCE_LOW
             ).apply {
                 lightColor = Color.BLUE
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
             val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             service.createNotificationChannel(chan)
-            // Set the info for the views that show in the notification panel.
             val notification: Notification = NotificationCompat.Builder(this, channelId)
+                .setContentIntent(contentIntent) // The intent to send when the entry is clicked
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.ic_notification_app_logo) // the status icon
                 .setWhen(System.currentTimeMillis()) // the time stamp
-                .setContentIntent(contentIntent) // The intent to send when the entry is clicked
                 .setCustomContentView(getSmallContentView())
                 .setCustomBigContentView(getBigContentView())
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setStyle(androidx.media.app.NotificationCompat.MediaStyle())
                 .setOngoing(true)
                 .build()
+            service.notify(NOTIFICATION_ID, notification)
+
+            // Set the info for the views that show in the notification panel.
             // Send the notification.
             startForeground(NOTIFICATION_ID, notification)
         }

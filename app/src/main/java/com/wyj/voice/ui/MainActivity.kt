@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                     titleBar.setPadding(0, BarUtils.getStatusBarHeight(), 0, 0)
                     tvLocalMusic.setOnClickListener(this@MainActivity)
                     playerBar.playCallback = this@MainActivity
+                    btnCommon.setOnClickListener(this@MainActivity)
                 }
     }
 
@@ -66,6 +67,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                         getLocalMusic()
                     }
                 }
+            }
+            R.id.btn_common -> {
+                startActivity(Intent(this, CommonActivity::class.java))
             }
         }
     }
@@ -100,8 +104,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     override fun onOpenMusicPlayer() {
-        Intent(this, MusicPlayerActivity::class.java).apply {
-            this@MainActivity.startActivity(this)
+        if (player != null) {
+            Intent(this, MusicPlayerActivity::class.java).apply {
+                this@MainActivity.startActivity(this)
+            }
         }
     }
 
