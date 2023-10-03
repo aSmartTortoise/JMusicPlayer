@@ -263,6 +263,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     override fun finish() {
         dataBinding.slRoot.visibility = View.GONE
         super.finish()
+        overridePendingTransition(R.anim.bottom_silent,R.anim.bottom_out);
     }
 
     override fun onDestroy() {

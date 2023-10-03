@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
         if (player != null) {
             Intent(this, MusicPlayerActivity::class.java).apply {
                 this@MainActivity.startActivity(this)
+                overridePendingTransition(R.anim.bottom_in,R.anim.bottom_silent)
             }
         }
     }
