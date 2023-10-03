@@ -11,150 +11,159 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.wyj.voice.view.SwipeBackLayout
+        android:id="@+id/sl_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/dp_16"
-        tools:background="@color/color_primary"
-        tools:context=".ui.MusicPlayerActivity">
+        app:directionMode="top"
+        app:maskAlpha="5"
+        app:swipeBackFactor="0.5">
 
-        <com.wyj.voice.view.ShadowImageView
-            android:id="@+id/siv"
-            android:layout_width="@dimen/dp_240"
-            android:layout_height="@dimen/dp_240"
-            android:src="@drawable/default_record_album"
-            app:layout_constraintBottom_toBottomOf="@id/text_view_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/dp_16"
+            android:background="@color/color_primary"
+            tools:context=".ui.MusicPlayerActivity">
 
-        <TextView
-            android:id="@+id/text_view_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_24"
-            android:layout_marginRight="@dimen/dp_24"
-            android:layout_marginBottom="@dimen/dp_8"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_18"
-            app:layout_constraintBottom_toTopOf="@id/text_view_artist"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Drag me down" />
+            <com.wyj.voice.view.ShadowImageView
+                android:id="@+id/siv"
+                android:layout_width="@dimen/dp_240"
+                android:layout_height="@dimen/dp_240"
+                android:src="@drawable/default_record_album"
+                app:layout_constraintBottom_toBottomOf="@id/text_view_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/text_view_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_24"
-            android:layout_marginRight="@dimen/dp_24"
-            android:layout_marginBottom="@dimen/dp_32"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_14"
-            app:layout_constraintBottom_toTopOf="@id/tv_progress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="One Direction" />
+            <TextView
+                android:id="@+id/text_view_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_24"
+                android:layout_marginRight="@dimen/dp_24"
+                android:layout_marginBottom="@dimen/dp_8"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_18"
+                app:layout_constraintBottom_toTopOf="@id/text_view_artist"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Drag me down" />
 
-        <TextView
-            android:id="@+id/tv_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="@dimen/dp_24"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintBottom_toTopOf="@id/button_play_toggle"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="00:00" />
+            <TextView
+                android:id="@+id/text_view_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_24"
+                android:layout_marginRight="@dimen/dp_24"
+                android:layout_marginBottom="@dimen/dp_32"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_14"
+                app:layout_constraintBottom_toTopOf="@id/tv_progress"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="One Direction" />
 
-        <androidx.appcompat.widget.AppCompatSeekBar
-            android:id="@+id/seek_bar"
-            style="@style/Widget.AppCompat.SeekBar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:max="10000"
-            app:layout_constraintBottom_toBottomOf="@id/tv_progress"
-            app:layout_constraintEnd_toStartOf="@id/tv_total_time"
-            app:layout_constraintStart_toEndOf="@id/tv_progress"
-            app:layout_constraintTop_toTopOf="@id/tv_progress"
-            tools:progress="500" />
+            <TextView
+                android:id="@+id/tv_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="@dimen/dp_24"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintBottom_toTopOf="@id/button_play_toggle"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="00:00" />
 
-        <TextView
-            android:id="@+id/tv_total_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintBottom_toBottomOf="@id/tv_progress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_progress"
-            tools:text="10:00" />
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/seek_bar"
+                style="@style/Widget.AppCompat.SeekBar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="10000"
+                app:layout_constraintBottom_toBottomOf="@id/tv_progress"
+                app:layout_constraintEnd_toStartOf="@id/tv_total_time"
+                app:layout_constraintStart_toEndOf="@id/tv_progress"
+                app:layout_constraintTop_toTopOf="@id/tv_progress"
+                tools:progress="500" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/button_play_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp_28"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:onClick="@{() -> playerViewModel.onPlayToggleAction()}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/ic_play" />
+            <TextView
+                android:id="@+id/tv_total_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintBottom_toBottomOf="@id/tv_progress"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_progress"
+                tools:text="10:00" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/button_play_last"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_24"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:onClick="@{() -> playerViewModel.playLast()}"
-            app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
-            app:layout_constraintEnd_toStartOf="@id/button_play_toggle"
-            app:layout_constraintTop_toTopOf="@id/button_play_toggle"
-            app:srcCompat="@drawable/ic_play_last" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/button_play_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_28"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:onClick="@{() -> playerViewModel.onPlayToggleAction()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_play" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/button_play_mode_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_24"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:onClick="@{() -> playerViewModel.onPlayModeToggleAction()}"
-            app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
-            app:layout_constraintEnd_toStartOf="@id/button_play_last"
-            app:layout_constraintTop_toTopOf="@id/button_play_toggle"
-            app:srcCompat="@drawable/ic_play_mode_shuffle" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/button_play_last"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:onClick="@{() -> playerViewModel.playLast()}"
+                app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
+                app:layout_constraintEnd_toStartOf="@id/button_play_toggle"
+                app:layout_constraintTop_toTopOf="@id/button_play_toggle"
+                app:srcCompat="@drawable/ic_play_last" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/button_play_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_24"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:onClick="@{() -> playerViewModel.playNext()}"
-            app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
-            app:layout_constraintStart_toEndOf="@id/button_play_toggle"
-            app:layout_constraintTop_toTopOf="@id/button_play_toggle"
-            app:srcCompat="@drawable/ic_play_next" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/button_play_mode_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:onClick="@{() -> playerViewModel.onPlayModeToggleAction()}"
+                app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
+                app:layout_constraintEnd_toStartOf="@id/button_play_last"
+                app:layout_constraintTop_toTopOf="@id/button_play_toggle"
+                app:srcCompat="@drawable/ic_play_mode_shuffle" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/button_favorite_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_24"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="center"
-            app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
-            app:layout_constraintStart_toEndOf="@id/button_play_next"
-            app:layout_constraintTop_toTopOf="@id/button_play_toggle"
-            app:srcCompat="@drawable/ic_favorite_no" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/button_play_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:onClick="@{() -> playerViewModel.playNext()}"
+                app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
+                app:layout_constraintStart_toEndOf="@id/button_play_toggle"
+                app:layout_constraintTop_toTopOf="@id/button_play_toggle"
+                app:srcCompat="@drawable/ic_play_next" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/button_favorite_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
+                app:layout_constraintStart_toEndOf="@id/button_play_next"
+                app:layout_constraintTop_toTopOf="@id/button_play_toggle"
+                app:srcCompat="@drawable/ic_favorite_no" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.wyj.voice.view.SwipeBackLayout>
 </layout>

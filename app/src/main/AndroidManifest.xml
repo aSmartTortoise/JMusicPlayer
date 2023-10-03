@@ -62,8 +62,7 @@
                 android:value="" />
         </activity>
         <activity android:name=".ui.CommonActivity"
-            android:theme="@style/Theme.MusicPlayer"
-            />
+            android:theme="@style/Theme.MusicPlayer" />
     </application>
 
 </manifest>

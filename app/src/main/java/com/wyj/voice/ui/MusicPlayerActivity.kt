@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
@@ -41,17 +42,17 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         // https://crazygui.wordpress.com/2010/09/05/high-quality-radial-gradient-in-android/
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-        val gradientBackgroundDrawable: GradientDrawable = GradientUtils.create(
-            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_gradientColor),
-            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_background),
-            screenHeight / 2,  // (int) Math.hypot(screenWidth / 2, screenHeight / 2),
-            0.5f,
-            0.5f
-        )
-        window.setBackgroundDrawable(gradientBackgroundDrawable)
-        window.setFormat(PixelFormat.RGBA_8888)
+//        val displayMetrics = resources.displayMetrics
+//        val screenHeight = displayMetrics.heightPixels
+//        val gradientBackgroundDrawable: GradientDrawable = GradientUtils.create(
+//            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_gradientColor),
+//            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_background),
+//            screenHeight / 2,  // (int) Math.hypot(screenWidth / 2, screenHeight / 2),
+//            0.5f,
+//            0.5f
+//        )
+//        window.setBackgroundDrawable(gradientBackgroundDrawable)
+//        window.setFormat(PixelFormat.RGBA_8888)
         BarUtils.transparentNavBar(this)
     }
 
@@ -256,9 +257,26 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         }
     }
 
+    /**
+     *  解决，滑动退出后，界面会再次绘制导致闪屏的问题。
+     */
+    override fun finish() {
+        dataBinding.slRoot.visibility = View.GONE
+        super.finish()
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy: wyj")
+        timerTask?.let {
+            it.cancel()
+            timerTask = null
+        }
+        timer = null
+        if (player != null && playerViewModel != null) {
+            playerViewModel?.unsubscribe()
+            playerViewModel = null
+            player?.unregisterCallback(this)
+            player = null
+        }
         musicViewModel?.let {
             if (it.comDisposable.isDisposed) {
                 it.comDisposable.dispose()
@@ -266,18 +284,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                 musicViewModel = null
             }
         }
-
-        if (player != null && playerViewModel != null) {
-            playerViewModel?.unsubscribe()
-            playerViewModel = null
-            player?.unregisterCallback(this)
-            player = null
-        }
-
-        timerTask?.let {
-            it.cancel()
-            timerTask = null
-        }
-        timer = null
+        super.onDestroy()
     }
 }
