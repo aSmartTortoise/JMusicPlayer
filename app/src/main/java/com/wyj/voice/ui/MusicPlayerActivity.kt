@@ -39,27 +39,22 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     private var timerTask: TimerTask? = null
     private var player: IPlayback? = null
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        // https://crazygui.wordpress.com/2010/09/05/high-quality-radial-gradient-in-android/
-//        val displayMetrics = resources.displayMetrics
-//        val screenHeight = displayMetrics.heightPixels
-//        val gradientBackgroundDrawable: GradientDrawable = GradientUtils.create(
-//            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_gradientColor),
-//            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_background),
-//            screenHeight / 2,  // (int) Math.hypot(screenWidth / 2, screenHeight / 2),
-//            0.5f,
-//            0.5f
-//        )
-//        window.setBackgroundDrawable(gradientBackgroundDrawable)
-//        window.setFormat(PixelFormat.RGBA_8888)
-        BarUtils.transparentNavBar(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: savedInstanceState:$savedInstanceState")
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_music_player)
+        BarUtils.transparentNavBar(this)
+        // https://crazygui.wordpress.com/2010/09/05/high-quality-radial-gradient-in-android/
+        val displayMetrics = resources.displayMetrics
+        val screenHeight = displayMetrics.heightPixels
+        val gradientBackgroundDrawable: GradientDrawable = GradientUtils.create(
+            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_gradientColor),
+            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_background),
+            screenHeight / 2,  // (int) Math.hypot(screenWidth / 2, screenHeight / 2),
+            0.5f,
+            0.5f
+        )
+        dataBinding.rootContent.background = gradientBackgroundDrawable
         musicViewModel = LocalMusicViewModel(this).apply {
             songs.observe(this@MusicPlayerActivity) {
             }
@@ -176,7 +171,8 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             override fun run() {
                 runOnUiThread {
                     player?.let {
-                        if (it.isPlaying()) {
+                        // 处理下滑退出，因activity已进入finish状态，如果继续更新view的状态会闪频。
+                        if (it.isPlaying() && !this@MusicPlayerActivity.isFinishing) {
                             val progress: Int = (dataBinding.seekBar.max
                                     * (it.getProgress().toFloat() / getCurrentSongDuration().toFloat())).toInt()
                             updateProgressTextWithDuration(it.getProgress())
@@ -261,9 +257,8 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
      *  解决，滑动退出后，界面会再次绘制导致闪屏的问题。
      */
     override fun finish() {
-        dataBinding.slRoot.visibility = View.GONE
         super.finish()
-        overridePendingTransition(R.anim.bottom_silent,R.anim.bottom_out);
+        overridePendingTransition(R.anim.bottom_silent, R.anim.bottom_out)
     }
 
     override fun onDestroy() {

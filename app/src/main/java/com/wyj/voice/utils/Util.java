@@ -67,19 +67,19 @@ public class Util {
         return null;
     }
 
-    public static boolean isScrollableView(View mView) {
-        return mView instanceof ScrollView
-                || mView instanceof HorizontalScrollView
-                || mView instanceof NestedScrollView
-                || mView instanceof AbsListView
-                || mView instanceof RecyclerView
-                || mView instanceof ViewPager
-                || mView instanceof WebView;
+    public static boolean isScrollableView(View view) {
+        return view instanceof ScrollView
+                || view instanceof HorizontalScrollView
+                || view instanceof NestedScrollView
+                || view instanceof AbsListView
+                || view instanceof RecyclerView
+                || view instanceof ViewPager
+                || view instanceof WebView;
     }
 
-    public static boolean contains(View mView, float x, float y) {
+    public static boolean contains(View view, float x, float y) {
         Rect localRect = new Rect();
-        mView.getGlobalVisibleRect(localRect);
+        view.getGlobalVisibleRect(localRect);
         return localRect.contains((int) x, (int) y);
     }
 

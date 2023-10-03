@@ -20,10 +20,11 @@
         app:swipeBackFactor="0.5">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/root_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/dp_16"
-            android:background="@color/color_primary"
+            tools:background="@color/color_primary"
             tools:context=".ui.MusicPlayerActivity">
 
             <com.wyj.voice.view.ShadowImageView
