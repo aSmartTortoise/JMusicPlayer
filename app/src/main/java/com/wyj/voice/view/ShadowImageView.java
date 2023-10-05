@@ -80,11 +80,10 @@ public class ShadowImageView extends AppCompatImageView {
             setPadding(padding, padding, padding, padding);
         }
         circle.getPaint().setAntiAlias(true);
-//        circle.getPaint().setColor(DEFAULT_BACKGROUND_COLOR);
         setBackground(circle);
 
         mRotateAnimator = ObjectAnimator.ofFloat(this, "rotation", 0f, 360f);
-        mRotateAnimator.setDuration(7200);
+        mRotateAnimator.setDuration(10_000);
         mRotateAnimator.setInterpolator(new LinearInterpolator());
         mRotateAnimator.setRepeatMode(ValueAnimator.RESTART);
         mRotateAnimator.setRepeatCount(ValueAnimator.INFINITE);

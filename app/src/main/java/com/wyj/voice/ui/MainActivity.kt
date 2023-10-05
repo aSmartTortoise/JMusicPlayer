@@ -19,6 +19,7 @@ import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
 import com.wyj.voice.player.PlayList
 import com.wyj.voice.utils.BarUtils
+import com.wyj.voice.utils.SizeUtils
 import com.wyj.voice.view.MusicPlayerBar
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import com.wyj.voice.viewModel.MusicPlayerViewModel

@@ -52,4 +52,5 @@ dependencies {
         exclude group: "com.android.support"
     }
     kapt 'com.github.bumptech.glide:compiler:4.15.0'
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
 }

@@ -2,6 +2,8 @@ package com.wyj.voice.ui
 
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMusicPlayerBinding
 import com.wyj.voice.manager.PreferenceManager
@@ -22,12 +26,10 @@ import com.wyj.voice.player.IPlayback
 import com.wyj.voice.player.PlayList
 import com.wyj.voice.player.PlayMode
 import com.wyj.voice.transform.CircleTransform
-import com.wyj.voice.utils.AlbumUtils
-import com.wyj.voice.utils.BarUtils
-import com.wyj.voice.utils.GradientUtils
-import com.wyj.voice.utils.TimeUtils
+import com.wyj.voice.utils.*
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import com.wyj.voice.viewModel.MusicPlayerViewModel
+import jp.wasabeef.glide.transformations.BlurTransformation
 import java.util.*
 
 
@@ -57,7 +59,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             0.5f,
             0.5f
         )
-        dataBinding.rootContent.background = gradientBackgroundDrawable
+        dataBinding.ivBg.background = gradientBackgroundDrawable
         musicViewModel = LocalMusicViewModel(this).apply {
             songs.observe(this@MusicPlayerActivity) {
             }
@@ -147,12 +149,42 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         dataBinding.tvTotalTime.text = TimeUtils.formatDuration(song.duration)
         // Step 4: Keep these things updated
         // - Album rotation
+        val size = SizeUtils.dp2px(240f)
+        val uri = song.album + "?param=${size}y${size}"
         Glide.with(this)
-            .load(song.album)
+            .load(uri)
             .apply(RequestOptions()
                 .placeholder(R.drawable.default_record_album)
                 .transform(CircleTransform()))
             .into(dataBinding.siv)
+        val displayMetrics = resources.displayMetrics
+        val screenHeight = displayMetrics.heightPixels
+        val gradientBackgroundDrawable: GradientDrawable = GradientUtils.create(
+            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_gradientColor),
+            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_background),
+            screenHeight / 2,
+            0.5f,
+            0.5f
+        )
+        Glide.with(this)
+            .asBitmap()
+            .load(uri)
+            .placeholder(gradientBackgroundDrawable)
+            .apply(RequestOptions.bitmapTransform(BlurTransformation(20, 3)))
+            .into(object : CustomTarget<Bitmap>(){
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    val zoomBitmap = BitmapUtils.zoomImg(
+                        resource,
+                        displayMetrics.widthPixels,
+                        displayMetrics.heightPixels
+                    )
+                    dataBinding.ivBg.setImageBitmap(zoomBitmap)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
+            } )
+
         dataBinding.siv.pauseRotateAnimation()
         Log.d(TAG, "onSongUpdated: wyj isPlaying:${player?.isPlaying()}")
         if (player?.isPlaying() == true) {
