@@ -1,6 +1,5 @@
 package com.wyj.voice.view
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Canvas
@@ -16,6 +15,10 @@ import androidx.customview.widget.ViewDragHelper
 import com.wyj.voice.R
 import com.wyj.voice.utils.Util
 
+/**
+ *  https://juejin.cn/post/6844903448622661645?from=search-suggest
+ *  关于ViewDragHelper在自定义View中的应用。
+ */
 class SwipeBackLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -23,15 +26,10 @@ class SwipeBackLayout @JvmOverloads constructor(
 ) : ViewGroup(context, attrs, defStyleAttr) {
 
     companion object {
-        const val FROM_LEFT = 1 shl 0
-        const val FROM_RIGHT = 1 shl 1
-        const val FROM_TOP = 1 shl 2
-        const val FROM_BOTTOM = 1 shl 3
         private const val TAG = "SwipeBackLayout"
     }
 
     private var viewDragHelper: ViewDragHelper
-    private var touchSlop = 0
     private var dragContentView: View? = null
     private var innerScrollView: View? = null
     private var leftOffset = 0
@@ -46,7 +44,7 @@ class SwipeBackLayout @JvmOverloads constructor(
     var autoFinishedVelocityLimit = 2000f
     private var maskAlpha = 125
     private var widthSize = 0
-    var heightSize = 0
+    private var heightSize = 0
 
     private var swipeBackListener: OnSwipeBackListener? = null
 
@@ -67,7 +65,7 @@ class SwipeBackLayout @JvmOverloads constructor(
         }
     }
 
-    @IntDef(*[FROM_LEFT, FROM_TOP, FROM_RIGHT, FROM_BOTTOM])
+    @IntDef(*[ViewDragHelper.EDGE_LEFT, ViewDragHelper.EDGE_RIGHT, ViewDragHelper.EDGE_TOP, ViewDragHelper.EDGE_BOTTOM])
     @Retention(AnnotationRetention.SOURCE)
     annotation class DirectionMode
 
@@ -75,7 +73,6 @@ class SwipeBackLayout @JvmOverloads constructor(
         setWillNotDraw(false)
         viewDragHelper = ViewDragHelper.create(this, 1f, DragHelperCallback()).apply {
             setEdgeTrackingEnabled(directionMode)
-            this@SwipeBackLayout.touchSlop = touchSlop
         }
         setSwipeBackListener(defaultSwipeBackListener)
         init(context, attrs)
@@ -144,6 +141,7 @@ class SwipeBackLayout @JvmOverloads constructor(
                         downY
                     )
                 ) {
+                    val touchSlop = viewDragHelper.touchSlop
                     val distanceX = Math.abs(ev.rawX - downX)
                     val distanceY = Math.abs(ev.rawY - downY)
                     if (directionMode == ViewDragHelper.EDGE_LEFT
@@ -256,7 +254,7 @@ class SwipeBackLayout @JvmOverloads constructor(
             Log.d(TAG, "clampViewPositionHorizontal: wyj")
             leftOffset = paddingLeft
             if (isSwipeEnabled()) {
-                if (directionMode == FROM_LEFT && !Util.canViewScrollRight(
+                if (directionMode == ViewDragHelper.EDGE_LEFT && !Util.canViewScrollRight(
                         innerScrollView,
                         downX,
                         downY,
@@ -264,7 +262,7 @@ class SwipeBackLayout @JvmOverloads constructor(
                     )
                 ) {
                     leftOffset = Math.min(Math.max(left, paddingLeft), widthSize)
-                } else if (directionMode == FROM_RIGHT && !Util.canViewScrollLeft(
+                } else if (directionMode == ViewDragHelper.EDGE_RIGHT && !Util.canViewScrollLeft(
                         innerScrollView,
                         downX,
                         downY,

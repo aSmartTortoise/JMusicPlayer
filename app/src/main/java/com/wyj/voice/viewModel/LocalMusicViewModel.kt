@@ -68,6 +68,14 @@ class LocalMusicViewModel(var activity: AppCompatActivity) : ViewModel(),
                 songRepository?.getLocalSongs(it) { disposable, songs ->
                     comDisposable.add(disposable!!)
                     Log.d(TAG, "onLoadFinished: wyj songs:$songs")
+                    for (song in songs) {
+                        val index = songs.indexOf(song)
+                        if (index == 0) {
+                            song.album = "http://www.yinleku.cn/wp-content/uploads/2022/02/2022022111220082.jpg"
+                        } else if (index == 1) {
+                            song.album = "https://d3tvwjfge35btc.cloudfront.net/Assets/59/240/L_p0017924059.jpg"
+                        }
+                    }
                     this.songs.value = songs
                 }
             }

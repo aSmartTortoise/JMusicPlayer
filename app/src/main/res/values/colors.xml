@@ -47,4 +47,5 @@
     <!-- CharacterView -->
     <color name="mp.characterView.background">#9CBDCC</color>
     <color name="mp.characterView.textColor">@color/mp.list.text.title</color>
+    <color name="mp.">#FF3C5F78</color>
 </resources>

@@ -1,13 +1,18 @@
 package com.wyj.voice.view
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.wyj.voice.R
 import com.wyj.voice.databinding.LayoutPlayBarBinding
 import com.wyj.voice.model.Song
+import com.wyj.voice.transform.CircleTransform
+import com.wyj.voice.utils.AlbumUtils
 
 class MusicPlayerBar @JvmOverloads constructor(
     context: Context,
@@ -46,15 +51,29 @@ class MusicPlayerBar @JvmOverloads constructor(
         if (song == null) {
             dataBinding.tvSongName.text = "unknow"
             dataBinding.tvSinger.text = "unknow"
+            dataBinding.sivAlbum.setImageResource(R.drawable.default_record_album)
+
         } else {
             dataBinding.tvSongName.text = song.displayName
             dataBinding.tvSinger.text = song.artist
+            Glide.with(this)
+                .load(song.album)
+                .apply(
+                    RequestOptions()
+                    .placeholder(R.drawable.default_record_album)
+                    .transform(CircleTransform()))
+                .into(dataBinding.sivAlbum)
         }
     }
 
     fun setPlaying(isPlaying: Boolean) {
-        dataBinding.ivPlayToggle.setImageResource(
-            if (isPlaying) R.drawable.ic_remote_view_pause else R.drawable.ic_remote_view_play)
+        dataBinding.sivAlbum.pauseRotateAnimation()
+        if (isPlaying) {
+            dataBinding.ivPlayToggle.setImageResource(R.drawable.ic_remote_view_pause)
+            dataBinding.sivAlbum.startRotateAnimation()
+        } else {
+            dataBinding.ivPlayToggle.setImageResource(R.drawable.ic_remote_view_play)
+        }
     }
 
     interface PlayCallback {

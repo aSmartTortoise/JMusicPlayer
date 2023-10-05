@@ -37,9 +37,9 @@ public class ShadowImageView extends AppCompatImageView {
     private static final float Y_OFFSET = 1.75f;
 
     private static final float SHADOW_RADIUS = 24f;
-    private static final int SHADOW_ELEVATION = 16;
 
-    private static final int DEFAULT_BACKGROUND_COLOR = 0xFF3C5F78;
+//    private static final int DEFAULT_BACKGROUND_COLOR = 0xFF3C5F78;
+    private static final int DEFAULT_BACKGROUND_COLOR = 0xFFBB86FC;
 
     private int mShadowRadius;
 
@@ -70,7 +70,6 @@ public class ShadowImageView extends AppCompatImageView {
         ShapeDrawable circle;
         if (elevationSupported()) {
             circle = new ShapeDrawable(new OvalShape());
-            ViewCompat.setElevation(this, SHADOW_ELEVATION * density);
         } else {
             OvalShape oval = new OvalShadow(mShadowRadius);
             circle = new ShapeDrawable(oval);
@@ -81,7 +80,7 @@ public class ShadowImageView extends AppCompatImageView {
             setPadding(padding, padding, padding, padding);
         }
         circle.getPaint().setAntiAlias(true);
-        circle.getPaint().setColor(DEFAULT_BACKGROUND_COLOR);
+//        circle.getPaint().setColor(DEFAULT_BACKGROUND_COLOR);
         setBackground(circle);
 
         mRotateAnimator = ObjectAnimator.ofFloat(this, "rotation", 0f, 360f);
@@ -104,7 +103,6 @@ public class ShadowImageView extends AppCompatImageView {
     }
 
     // Animation
-
     public void startRotateAnimation() {
         mRotateAnimator.cancel();
         mRotateAnimator.start();

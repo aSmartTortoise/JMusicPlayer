@@ -5,7 +5,7 @@ data class Song(
     val title: String?,
     val displayName: String?,
     val artist: String?,
-    val album: String?,
+    var album: String?,
     val path: String?,
     val duration: Int,
     val size: Int,

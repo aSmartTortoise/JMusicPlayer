@@ -28,11 +28,13 @@
             tools:context=".ui.MusicPlayerActivity">
 
             <com.wyj.voice.view.ShadowImageView
+                android:scaleType="centerCrop"
+                android:elevation="@dimen/dp_8"
                 android:id="@+id/siv"
                 android:layout_width="@dimen/dp_240"
                 android:layout_height="@dimen/dp_240"
                 android:src="@drawable/default_record_album"
-                app:layout_constraintBottom_toBottomOf="@id/text_view_name"
+                app:layout_constraintBottom_toTopOf="@id/text_view_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

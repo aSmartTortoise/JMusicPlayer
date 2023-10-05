@@ -50,4 +50,5 @@
             <enum name="bottom" value="8" />
         </attr>
     </declare-styleable>
+
 </resources>

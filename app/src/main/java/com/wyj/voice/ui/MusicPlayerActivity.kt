@@ -12,6 +12,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMusicPlayerBinding
 import com.wyj.voice.manager.PreferenceManager
@@ -19,6 +21,7 @@ import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
 import com.wyj.voice.player.PlayList
 import com.wyj.voice.player.PlayMode
+import com.wyj.voice.transform.CircleTransform
 import com.wyj.voice.utils.AlbumUtils
 import com.wyj.voice.utils.BarUtils
 import com.wyj.voice.utils.GradientUtils
@@ -144,12 +147,12 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         dataBinding.tvTotalTime.text = TimeUtils.formatDuration(song.duration)
         // Step 4: Keep these things updated
         // - Album rotation
-        val bitmap: Bitmap? = AlbumUtils.parseAlbum(song)
-        if (bitmap == null) {
-            dataBinding.siv.setImageResource(R.drawable.default_record_album)
-        } else {
-            dataBinding.siv.setImageBitmap(AlbumUtils.getCroppedBitmap(bitmap))
-        }
+        Glide.with(this)
+            .load(song.album)
+            .apply(RequestOptions()
+                .placeholder(R.drawable.default_record_album)
+                .transform(CircleTransform()))
+            .into(dataBinding.siv)
         dataBinding.siv.pauseRotateAnimation()
         Log.d(TAG, "onSongUpdated: wyj isPlaying:${player?.isPlaying()}")
         if (player?.isPlaying() == true) {

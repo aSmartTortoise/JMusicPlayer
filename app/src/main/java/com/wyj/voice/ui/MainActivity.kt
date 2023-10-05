@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMainBinding
 import com.wyj.voice.manager.PreferenceManager
