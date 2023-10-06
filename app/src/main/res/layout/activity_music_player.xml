@@ -23,14 +23,22 @@
             android:id="@+id/root_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:background="@color/color_primary"
             tools:context=".ui.MusicPlayerActivity">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_bg"
+                tools:background="@color/color_primary"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
+
+            <com.wyj.voice.view.TitleBar
+                app:leftIconVisible="true"
+                android:id="@+id/title_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:leftIcon="@drawable/ic_down_back" />
 
             <com.wyj.voice.view.ShadowImageView
                 android:id="@+id/siv"
@@ -94,6 +102,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:max="10000"
+                android:progressTint="@color/color_primary"
+                android:thumbTint="@color/color_primary_pressed"
                 app:layout_constraintBottom_toBottomOf="@id/tv_progress"
                 app:layout_constraintEnd_toStartOf="@id/tv_total_time"
                 app:layout_constraintStart_toEndOf="@id/tv_progress"
@@ -117,7 +127,7 @@
                 android:id="@+id/button_play_toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/dp_38"
+                android:layout_marginBottom="@dimen/dp_40"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:onClick="@{() -> playerViewModel.onPlayToggleAction()}"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -162,7 +172,7 @@
                 app:srcCompat="@drawable/ic_play_next" />
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/button_favorite_toggle"
+                android:id="@+id/button_song_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_24"
@@ -171,7 +181,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/button_play_toggle"
                 app:layout_constraintStart_toEndOf="@id/button_play_next"
                 app:layout_constraintTop_toTopOf="@id/button_play_toggle"
-                app:srcCompat="@drawable/ic_favorite_no" />
+                app:srcCompat="@drawable/ic_song_list" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.wyj.voice.view.SwipeBackLayout>
 </layout>

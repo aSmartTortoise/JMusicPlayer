@@ -49,11 +49,12 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         Log.d(TAG, "onCreate: savedInstanceState:$savedInstanceState")
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_music_player)
         BarUtils.transparentNavBar(this)
+        dataBinding.titleBar.setPadding(0, BarUtils.getStatusBarHeight(), 0, 0)
         // https://crazygui.wordpress.com/2010/09/05/high-quality-radial-gradient-in-android/
         val displayMetrics = resources.displayMetrics
         val screenHeight = displayMetrics.heightPixels
         val gradientBackgroundDrawable: GradientDrawable = GradientUtils.create(
-            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_gradientColor),
+            ContextCompat.getColor(this, R.color.color_primary_pressed),
             ContextCompat.getColor(this, R.color.mp_theme_dark_blue_background),
             screenHeight / 2,  // (int) Math.hypot(screenWidth / 2, screenHeight / 2),
             0.5f,
@@ -142,25 +143,21 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         // Step 1: Song name and artist
         dataBinding.textViewName.text = song.displayName
         dataBinding.textViewArtist.text = song.artist
-        // Step 2: favorite
-        dataBinding.buttonFavoriteToggle.setImageResource(
-            if (song.favorite) R.drawable.ic_favorite_yes else R.drawable.ic_favorite_no)
-        // Step 3: Duration
+        // Step 2: Duration
         dataBinding.tvTotalTime.text = TimeUtils.formatDuration(song.duration)
-        // Step 4: Keep these things updated
-        // - Album rotation
+        // Step 3: Keep these things updated
         val size = SizeUtils.dp2px(240f)
-        val uri = song.album + "?param=${size}y${size}"
         Glide.with(this)
-            .load(uri)
+            .load(song.album)
             .apply(RequestOptions()
                 .placeholder(R.drawable.default_record_album)
-                .transform(CircleTransform()))
+                .transform(CircleTransform())
+                .override(size, size))
             .into(dataBinding.siv)
         val displayMetrics = resources.displayMetrics
         val screenHeight = displayMetrics.heightPixels
         val gradientBackgroundDrawable: GradientDrawable = GradientUtils.create(
-            ContextCompat.getColor(this, R.color.mp_theme_dark_blue_gradientColor),
+            ContextCompat.getColor(this, R.color.color_primary_pressed),
             ContextCompat.getColor(this, R.color.mp_theme_dark_blue_background),
             screenHeight / 2,
             0.5f,
@@ -168,14 +165,18 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         )
         Glide.with(this)
             .asBitmap()
-            .load(uri)
+            .load(song.album)
             .placeholder(gradientBackgroundDrawable)
-            .apply(RequestOptions.bitmapTransform(BlurTransformation(20, 3)))
+            .apply(
+                RequestOptions()
+                    .override(size, size)
+                    .transform(BlurTransformation(20, 3))
+            )
             .into(object : CustomTarget<Bitmap>(){
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     val zoomBitmap = BitmapUtils.zoomImg(
                         resource,
-                        displayMetrics.widthPixels,
+                        displayMetrics.heightPixels,
                         displayMetrics.heightPixels
                     )
                     dataBinding.ivBg.setImageBitmap(zoomBitmap)
@@ -187,6 +188,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
 
         dataBinding.siv.pauseRotateAnimation()
         Log.d(TAG, "onSongUpdated: wyj isPlaying:${player?.isPlaying()}")
+        // - Album rotation
         if (player?.isPlaying() == true) {
             dataBinding.siv.startRotateAnimation()
             scheduleTask()

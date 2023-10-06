@@ -72,8 +72,10 @@ class LocalMusicViewModel(var activity: AppCompatActivity) : ViewModel(),
                         val index = songs.indexOf(song)
                         if (index == 0) {
                             song.album = "https://www.smugmug.com/photos/i-Nh4X4XM/0/O/i-Nh4X4XM-O.jpg"
+                            song.artist = "阿杜"
                         } else if (index == 1) {
                             song.album = "https://d3tvwjfge35btc.cloudfront.net/Assets/59/240/L_p0017924059.jpg"
+                            song.artist = "杨宗伟"
                         }
                     }
                     this.songs.value = songs

@@ -14,13 +14,13 @@
 
     <!-- Theme - Dark Blue -->
     <color name="mp.theme.dark_blue.background">#3C5F78</color>
-    <color name="mp.theme.dark_blue.gradientColor">#507E9F</color>
+    <color name="color_primary_pressed">#507E9F</color>
     <color name="mp.theme.dark_blue.colorControlActivated">#7AFFFFFF</color>
     <color name="mp.theme.dark_blue.colorControlHighlight">#7AFFFFFF</color>
 
     <color name="mp.theme.dark_blue.colorPrimary">#3C5F78</color>
     <color name="mp.theme.dark_blue.colorPrimaryDark">#3C5F78</color>
-    <color name="mp.theme.dark_blue.colorAccent">#DDF9FF</color>
+    <color name="color_icon_fill">#DDF9FF</color>
     <color name="mp.theme.dark_blue.textColorPrimary">#DDF9FF</color>
     <color name="mp.theme.dark_blue.textColorSecondary">#3C5F78</color>
 

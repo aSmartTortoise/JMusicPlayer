@@ -69,10 +69,10 @@ class MusicPlayerBar @JvmOverloads constructor(
     fun setPlaying(isPlaying: Boolean) {
         dataBinding.sivAlbum.pauseRotateAnimation()
         if (isPlaying) {
-            dataBinding.ivPlayToggle.setImageResource(R.drawable.ic_remote_view_pause)
+            dataBinding.ivPlayToggle.setImageResource(R.drawable.ic_pause_state)
             dataBinding.sivAlbum.startRotateAnimation()
         } else {
-            dataBinding.ivPlayToggle.setImageResource(R.drawable.ic_remote_view_play)
+            dataBinding.ivPlayToggle.setImageResource(R.drawable.ic_play_state)
         }
     }
 

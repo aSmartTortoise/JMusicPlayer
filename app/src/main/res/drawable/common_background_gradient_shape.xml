@@ -4,7 +4,7 @@
         android:centerX="50%"
         android:centerY="50%"
         android:endColor="@color/mp.theme.dark_blue.background"
-        android:startColor="@color/mp.theme.dark_blue.gradientColor"
+        android:startColor="@color/color_primary_pressed"
         android:type="radial"
         android:gradientRadius="1000dp"
         />
