@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
 
-        <com.wyj.voice.view.TitleBar
+        <com.wyj.voice.ui.view.TitleBar
             android:id="@+id/title_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title_bar" />
 
-        <com.wyj.voice.view.MusicPlayerBar
+        <com.wyj.voice.ui.view.MusicPlayerBar
             android:id="@+id/player_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

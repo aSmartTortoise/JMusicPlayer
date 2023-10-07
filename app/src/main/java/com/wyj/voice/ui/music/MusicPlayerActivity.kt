@@ -1,14 +1,11 @@
-package com.wyj.voice.ui
+package com.wyj.voice.ui.music
 
 import android.graphics.Bitmap
-import android.graphics.PixelFormat
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity

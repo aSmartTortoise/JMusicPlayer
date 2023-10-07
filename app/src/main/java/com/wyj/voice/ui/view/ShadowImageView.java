@@ -1,8 +1,7 @@
-package com.wyj.voice.view;
+package com.wyj.voice.ui.view;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;

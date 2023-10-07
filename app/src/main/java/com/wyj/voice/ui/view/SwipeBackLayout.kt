@@ -1,4 +1,4 @@
-package com.wyj.voice.view
+package com.wyj.voice.ui.view
 
 import android.app.Activity
 import android.content.Context

@@ -34,7 +34,7 @@
         </service>
 
         <activity
-            android:name=".ui.MusicPlayerActivity"
+            android:name=".ui.music.MusicPlayerActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:theme="@style/Theme.MusicPlayer">

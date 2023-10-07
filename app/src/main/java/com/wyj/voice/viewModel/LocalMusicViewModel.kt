@@ -63,9 +63,9 @@ class LocalMusicViewModel(var activity: AppCompatActivity) : ViewModel(),
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
         Log.d(TAG, "onLoadFinished: count:${data?.count}")
-        data?.let {
-            if (it.count > 0) {
-                songRepository?.getLocalSongs(it) { disposable, songs ->
+        data?.let { cursor ->
+            if (cursor.count > 0) {
+                songRepository?.getLocalSongs(cursor) { disposable, songs ->
                     comDisposable.add(disposable!!)
                     Log.d(TAG, "onLoadFinished: wyj songs:$songs")
                     for (song in songs) {
@@ -76,6 +76,12 @@ class LocalMusicViewModel(var activity: AppCompatActivity) : ViewModel(),
                         } else if (index == 1) {
                             song.album = "https://d3tvwjfge35btc.cloudfront.net/Assets/59/240/L_p0017924059.jpg"
                             song.artist = "杨宗伟"
+                        }
+                        song.displayName?.let {
+                            if (it.contains('.')) {
+                                val lastIndex = it.lastIndexOf('.')
+                                song.displayName = it.subSequence(0, lastIndex).toString()
+                            }
                         }
                     }
                     this.songs.value = songs

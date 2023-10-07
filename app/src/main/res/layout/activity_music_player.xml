@@ -11,7 +11,7 @@
 
     </data>
 
-    <com.wyj.voice.view.SwipeBackLayout
+    <com.wyj.voice.ui.view.SwipeBackLayout
         android:id="@+id/sl_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,7 +23,7 @@
             android:id="@+id/root_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".ui.MusicPlayerActivity">
+            tools:context=".ui.music.MusicPlayerActivity">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_bg"
@@ -32,7 +32,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
 
-            <com.wyj.voice.view.TitleBar
+            <com.wyj.voice.ui.view.TitleBar
                 app:leftIconVisible="true"
                 android:id="@+id/title_bar"
                 android:layout_width="match_parent"
@@ -40,7 +40,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:leftIcon="@drawable/ic_down_back" />
 
-            <com.wyj.voice.view.ShadowImageView
+            <com.wyj.voice.ui.view.ShadowImageView
                 android:id="@+id/siv"
                 android:layout_width="@dimen/dp_240"
                 android:layout_height="@dimen/dp_240"
@@ -183,5 +183,5 @@
                 app:layout_constraintTop_toTopOf="@id/button_play_toggle"
                 app:srcCompat="@drawable/ic_song_list" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.wyj.voice.view.SwipeBackLayout>
+    </com.wyj.voice.ui.view.SwipeBackLayout>
 </layout>

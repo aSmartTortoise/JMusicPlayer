@@ -3,7 +3,7 @@ package com.wyj.voice.model
 data class Song(
     var id: Int = 0,
     val title: String?,
-    val displayName: String?,
+    var displayName: String?,
     var artist: String?,
     var album: String?,
     val path: String?,

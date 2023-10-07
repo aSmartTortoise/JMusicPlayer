@@ -107,6 +107,9 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
         player.setPlayList(list)
     }
 
+    override fun getPlayList() =
+        player.getPlayList()
+
     override fun play(): Boolean {
         return player.play()
     }

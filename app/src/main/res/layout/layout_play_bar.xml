@@ -15,7 +15,7 @@
         android:paddingHorizontal="@dimen/dp_4"
         android:paddingVertical="@dimen/dp_8">
 
-        <com.wyj.voice.view.ShadowImageView
+        <com.wyj.voice.ui.view.ShadowImageView
             android:id="@+id/siv_album"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"

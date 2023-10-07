@@ -11,16 +11,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import com.bumptech.glide.Glide
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMainBinding
 import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
 import com.wyj.voice.player.PlayList
+import com.wyj.voice.ui.music.MusicPlayerActivity
+import com.wyj.voice.ui.music.SongListDialog
 import com.wyj.voice.utils.BarUtils
-import com.wyj.voice.utils.SizeUtils
-import com.wyj.voice.view.MusicPlayerBar
+import com.wyj.voice.ui.view.MusicPlayerBar
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import com.wyj.voice.viewModel.MusicPlayerViewModel
 
@@ -98,7 +98,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     override fun onShowSongs() {
-        Log.d(TAG, "onShowSongs: ")
+        player?.getPlayList().let {
+            val songListDialog = SongListDialog(this).apply {
+                show()
+            }
+            songListDialog.setSongs(it?.songs!!)
+        }
     }
 
     override fun onOpenMusicPlayer() {

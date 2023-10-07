@@ -5,6 +5,8 @@ import com.wyj.voice.model.Song
 interface IPlayback {
     fun setPlayList(list: PlayList)
 
+    fun getPlayList(): PlayList?
+
     fun play(): Boolean
 
     fun play(list: PlayList): Boolean

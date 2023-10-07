@@ -45,6 +45,10 @@ class Player private constructor(): IPlayback, MediaPlayer.OnCompletionListener 
         playList = list
     }
 
+    override fun getPlayList(): PlayList? {
+        return playList
+    }
+
     override fun play(): Boolean {
         if (paused) {
             paused = false

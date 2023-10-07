@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.wyj.voice.R
+import com.wyj.voice.ui.music.MusicPlayerActivity
 
 /**
  *  https://developer.android.com/about/versions/12/behavior-changes-12?hl=zh-cn#notification-trampolines
