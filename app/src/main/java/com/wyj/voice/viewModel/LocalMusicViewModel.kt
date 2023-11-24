@@ -7,12 +7,17 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import com.wyj.voice.model.Song
 import com.wyj.voice.model.SongRepository
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class LocalMusicViewModel(var activity: AppCompatActivity) : ViewModel(),
     LoaderManager.LoaderCallbacks<Cursor> {
@@ -39,12 +44,7 @@ class LocalMusicViewModel(var activity: AppCompatActivity) : ViewModel(),
     }
 
     var songs: MutableLiveData<List<Song>> = MutableLiveData()
-    var songRepository: SongRepository? = null
     var comDisposable = CompositeDisposable()
-
-    init {
-        songRepository = SongRepository()
-    }
 
     fun getLocalSongs() {
         LoaderManager.getInstance(activity).initLoader(URL_LOAD_LOCAL_MUSIC, null, this)
@@ -65,27 +65,12 @@ class LocalMusicViewModel(var activity: AppCompatActivity) : ViewModel(),
         Log.d(TAG, "onLoadFinished: count:${data?.count}")
         data?.let { cursor ->
             if (cursor.count > 0) {
-                songRepository?.getLocalSongs(cursor) { disposable, songs ->
-                    comDisposable.add(disposable!!)
-                    Log.d(TAG, "onLoadFinished: wyj songs:$songs")
-                    for (song in songs) {
-                        val index = songs.indexOf(song)
-                        if (index == 0) {
-                            song.album = "https://www.smugmug.com/photos/i-Nh4X4XM/0/O/i-Nh4X4XM-O.jpg"
-                            song.artist = "阿杜"
-                        } else if (index == 1) {
-                            song.album = "https://d3tvwjfge35btc.cloudfront.net/Assets/59/240/L_p0017924059.jpg"
-                            song.artist = "杨宗伟"
-                        }
-                        song.displayName?.let {
-                            if (it.contains('.')) {
-                                val lastIndex = it.lastIndexOf('.')
-                                song.displayName = it.subSequence(0, lastIndex).toString()
-                            }
-                        }
+                SongRepository.getLocalSongsFlow(cursor)
+                    .onEach {
+                        this.songs.value = it
                     }
-                    this.songs.value = songs
-                }
+                    .flowOn(Dispatchers.Main)
+                    .launchIn(viewModelScope)
             }
         }
     }
