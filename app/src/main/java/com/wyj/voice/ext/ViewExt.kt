@@ -374,7 +374,7 @@ fun View.layoutGravity(gravity: Int) {
 }
 
 fun View.clickFlow() = callbackFlow {
-    setOnClickListener { offer(Unit) }
+    setOnClickListener { trySend(Unit) }
     awaitClose { setOnClickListener(null) }
 }
 

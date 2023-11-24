@@ -89,7 +89,6 @@ class SwipeBackLayout @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        Log.d(TAG, "onMeasure: wyj")
         val childCount = childCount
         check(childCount <= 1) { "SwipeBackLayout must contains only one direct child." }
         var defaultMeasuredWidth = 0
@@ -106,7 +105,6 @@ class SwipeBackLayout @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        Log.d(TAG, "onLayout: wyj changed:$changed")
         if (childCount == 0) return
         val left = paddingLeft + leftOffset
         val top = paddingTop + topOffset
@@ -123,7 +121,6 @@ class SwipeBackLayout @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        Log.d(TAG, "onDraw: wyj swipeBackFraction:$swipeBackFraction")
         canvas.drawARGB(maskAlpha - (maskAlpha * swipeBackFraction).toInt(), 0, 0, 0)
     }
 
@@ -178,9 +175,7 @@ class SwipeBackLayout @JvmOverloads constructor(
     }
 
     override fun computeScroll() {
-        Log.d(TAG, "computeScroll: wyj")
         if (viewDragHelper.continueSettling(true)) {
-            Log.d(TAG, "computeScroll: wyj is continue settling")
             ViewCompat.postInvalidateOnAnimation(this)
         }
     }

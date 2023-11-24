@@ -11,6 +11,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
@@ -27,7 +28,11 @@ import com.wyj.voice.utils.*
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import com.wyj.voice.viewModel.MusicPlayerViewModel
 import jp.wasabeef.glide.transformations.BlurTransformation
-import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 
 
 class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
@@ -37,9 +42,8 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     private var musicViewModel: LocalMusicViewModel? = null
     private var playerViewModel: MusicPlayerViewModel? = null
     private lateinit var dataBinding: ActivityMusicPlayerBinding
-    private var timer: Timer? = null
-    private var timerTask: TimerTask? = null
     private var player: IPlayback? = null
+    private var playProgressJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,16 +76,13 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                timerTask?.let {
-                    it.cancel()
-                    timerTask = null
-                }
+                cancelPlayProgressJob()
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 seekTo(getDuration(seekBar.progress))
                 if (player?.isPlaying() == true) {
-                    scheduleTask()
+                    launchUpdateProgressJob()
                 }
             }
         })
@@ -130,10 +131,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             dataBinding.seekBar.progress = 0
             updateProgressTextWithProgress(0)
             seekTo(0)
-            timerTask?.let {
-                it.cancel()
-                timerTask = null
-            }
+            cancelPlayProgressJob()
             return
         }
 
@@ -188,41 +186,54 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         // - Album rotation
         if (player?.isPlaying() == true) {
             dataBinding.siv.startRotateAnimation()
-            scheduleTask()
+            launchUpdateProgressJob()
             dataBinding.buttonPlayToggle.setImageResource(R.drawable.ic_pause)
         }
     }
 
-    private fun scheduleTask() {
-        if (timer == null) {
-            timer = Timer()
-        }
-        timerTask?.let {
+    private fun cancelPlayProgressJob() {
+        playProgressJob?.let {
             it.cancel()
-            timerTask = null
+            playProgressJob = null
         }
-        timerTask = object : TimerTask() {
-            override fun run() {
-                runOnUiThread {
-                    player?.let {
-                        // 处理下滑退出，因activity已进入finish状态，如果继续更新view的状态会闪频。
-                        if (it.isPlaying() && !this@MusicPlayerActivity.isFinishing) {
-                            val progress: Int = (dataBinding.seekBar.max
-                                    * (it.getProgress().toFloat() / getCurrentSongDuration().toFloat())).toInt()
-                            updateProgressTextWithDuration(it.getProgress())
-                            if (progress >= 0 && progress <= dataBinding.seekBar.max) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    dataBinding.seekBar.setProgress(progress, true)
-                                } else {
-                                    dataBinding.seekBar.progress = progress
-                                }
-                            }
-                        }
+    }
+
+    private fun launchUpdateProgressJob() {
+        cancelPlayProgressJob()
+        playProgressJob = flow {
+            repeat(Int.MAX_VALUE) {
+                Log.d(TAG, "scheduleTask: isActive:${currentCoroutineContext()[Job]?.isActive}")
+                player?.let {
+                    if (it.isPlaying()) {
+                        emit(it.getProgress())
+                        delay(1000)
                     }
                 }
             }
         }
-        timer?.schedule(timerTask, 0, 50)
+            .flowOn(Dispatchers.IO)
+            .onEach {
+                Log.d(TAG, "scheduleTask: each progress:$it")
+                if (!this@MusicPlayerActivity.isFinishing) {
+                    updateProgressTextWithDuration(it)
+                }
+            }
+            .map {
+                (dataBinding.seekBar.max * it.toFloat() / getCurrentSongDuration().toFloat()).toInt()
+            }
+            .onEach {
+                if (!this@MusicPlayerActivity.isFinishing) {
+                    if (it >= 0 && it <= dataBinding.seekBar.max) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            dataBinding.seekBar.setProgress(it, true)
+                        } else {
+                            dataBinding.seekBar.progress = it
+                        }
+                    }
+                }
+            }
+            .flowOn(Dispatchers.Main.immediate)
+            .launchIn(lifecycleScope)
     }
 
     private fun updateProgressTextWithProgress(progress: Int) {
@@ -277,13 +288,10 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         dataBinding.buttonPlayToggle.setImageResource(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
         if (isPlaying) {
             dataBinding.siv.resumeRotateAnimation()
-            scheduleTask()
+            launchUpdateProgressJob()
         } else {
             dataBinding.siv.pauseRotateAnimation()
-            timerTask?.let {
-                it.cancel()
-                timerTask = null
-            }
+            cancelPlayProgressJob()
         }
     }
 
@@ -296,11 +304,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     }
 
     override fun onDestroy() {
-        timerTask?.let {
-            it.cancel()
-            timerTask = null
-        }
-        timer = null
+        cancelPlayProgressJob()
         if (player != null && playerViewModel != null) {
             playerViewModel?.unsubscribe()
             playerViewModel = null
