@@ -206,7 +206,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                 player?.let {
                     if (it.isPlaying()) {
                         emit(it.getProgress())
-                        delay(1000)
+                        delay(50)
                     }
                 }
             }
