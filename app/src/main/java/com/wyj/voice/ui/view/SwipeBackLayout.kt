@@ -13,7 +13,7 @@ import androidx.annotation.IntDef
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
 import com.wyj.voice.R
-import com.wyj.voice.utils.Util
+import com.wyj.voice.utils.ViewUtils
 
 /**
  *  https://juejin.cn/post/6844903448622661645?from=search-suggest
@@ -116,7 +116,7 @@ class SwipeBackLayout @JvmOverloads constructor(
             widthSize = width
             heightSize = height
         }
-        innerScrollView = Util.findAllScrollViews(this)
+        innerScrollView = ViewUtils.findAllScrollViews(this)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -132,8 +132,8 @@ class SwipeBackLayout @JvmOverloads constructor(
                 downY = ev.rawY
             }
             MotionEvent.ACTION_MOVE -> {
-                if (innerScrollView != null && Util.contains(
-                        innerScrollView,
+                if (innerScrollView != null && ViewUtils.contains(
+                        innerScrollView!!,
                         downX,
                         downY
                     )
@@ -249,7 +249,7 @@ class SwipeBackLayout @JvmOverloads constructor(
             Log.d(TAG, "clampViewPositionHorizontal: wyj")
             leftOffset = paddingLeft
             if (isSwipeEnabled()) {
-                if (directionMode == ViewDragHelper.EDGE_LEFT && !Util.canViewScrollRight(
+                if (directionMode == ViewDragHelper.EDGE_LEFT && !ViewUtils.canViewScrollRight(
                         innerScrollView,
                         downX,
                         downY,
@@ -257,7 +257,7 @@ class SwipeBackLayout @JvmOverloads constructor(
                     )
                 ) {
                     leftOffset = Math.min(Math.max(left, paddingLeft), widthSize)
-                } else if (directionMode == ViewDragHelper.EDGE_RIGHT && !Util.canViewScrollLeft(
+                } else if (directionMode == ViewDragHelper.EDGE_RIGHT && !ViewUtils.canViewScrollLeft(
                         innerScrollView,
                         downX,
                         downY,
@@ -277,10 +277,10 @@ class SwipeBackLayout @JvmOverloads constructor(
             topOffset = paddingTop
             if (isSwipeEnabled()) {
                 if (directionMode == ViewDragHelper.EDGE_TOP
-                    && !Util.canViewScrollUp(innerScrollView, downX, downY, false)) {
+                    && !ViewUtils.canViewScrollUp(innerScrollView, downX, downY, false)) {
                     topOffset = Math.min(Math.max(top, paddingTop), heightSize)
                 } else if (directionMode == ViewDragHelper.EDGE_BOTTOM
-                    && !Util.canViewScrollDown(innerScrollView, downX, downY, false)) {
+                    && !ViewUtils.canViewScrollDown(innerScrollView, downX, downY, false)) {
                     topOffset = Math.min(Math.max(top, -heightSize), paddingBottom)
                 }
             }

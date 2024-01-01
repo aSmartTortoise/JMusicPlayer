@@ -62,8 +62,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity android:name=".ui.CommonActivity"
-            android:theme="@style/Theme.MusicPlayer" />
     </application>
 
 </manifest>
