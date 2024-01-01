@@ -98,11 +98,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     override fun onShowSongs() {
-        player?.getPlayList().let {
+        player?.getPlayList()?.let {
             val songListDialog = SongListDialog(this).apply {
                 show()
             }
-            songListDialog.setSongs(it?.songs!!)
+            songListDialog.setSongs(it.songs)
         }
     }
 

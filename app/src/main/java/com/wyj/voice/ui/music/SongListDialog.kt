@@ -1,13 +1,12 @@
 package com.wyj.voice.ui.music
 
-import android.R.color
-import android.R.drawable
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
-import androidx.core.graphics.drawable.DrawableCompat
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.wyj.voice.R
@@ -21,10 +20,17 @@ class SongListDialog @JvmOverloads constructor(context: Context, theme: Int = 0)
     BottomSheetDialog(context, theme) {
     private lateinit var adapter: SongListAdapter
     private lateinit var dataBinding: DialogSongListBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dataBinding = DialogSongListBinding.inflate(LayoutInflater.from(context))
         setContentView(dataBinding.root)
+        window?.let {
+            it.attributes = it.attributes.apply {
+                width = ViewGroup.LayoutParams.MATCH_PARENT //设置宽度为铺满
+                gravity = Gravity.BOTTOM
+            }
+        }
 
         adapter = SongListAdapter()
         dataBinding.rcvSongs.apply {
@@ -35,25 +41,25 @@ class SongListDialog @JvmOverloads constructor(context: Context, theme: Int = 0)
         updatePlayMode(current)
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+    @SuppressLint("UseCompatLoadingForDrawables", "SuspiciousIndentation")
     private fun updatePlayMode(playMode: PlayMode) {
-        var res = R.drawable.ic_play_mode_list
+        var res = R.drawable.ic_play_mode_list_black
         var modeStr = "列表循环"
             when (playMode) {
             PlayMode.LIST -> {
-                res = R.drawable.ic_play_mode_list
+                res = R.drawable.ic_play_mode_list_black
                 modeStr = "列表播放"
             }
             PlayMode.LOOP -> {
-                res = R.drawable.ic_play_mode_loop
+                res = R.drawable.ic_play_mode_loop_black
                 modeStr = "列表循环"
             }
             PlayMode.SHUFFLE -> {
-                res = R.drawable.ic_play_mode_shuffle
+                res = R.drawable.ic_play_mode_shuffle_black
                 modeStr = "随机模式"
             }
             PlayMode.SINGLE -> {
-                res = R.drawable.ic_play_mode_single
+                res = R.drawable.ic_play_mode_single_black
                 modeStr = "单曲播放"
             }
         }

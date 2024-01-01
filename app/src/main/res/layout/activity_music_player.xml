@@ -92,7 +92,6 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintBottom_toTopOf="@id/button_play_toggle"
-                app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="00:00" />
 

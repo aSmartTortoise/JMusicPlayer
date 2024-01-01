@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.player.PlayMode
 import com.wyj.voice.player.PlaybackService
+import com.wyj.voice.ui.music.SongListDialog
 import io.reactivex.disposables.CompositeDisposable
 
 class MusicPlayerViewModel(var context: Context?): ViewModel() {
@@ -60,7 +61,8 @@ class MusicPlayerViewModel(var context: Context?): ViewModel() {
     }
 
     private fun bindPlaybackService() {
-        context?.bindService(Intent(context, PlaybackService::class.java), connection, Context.BIND_AUTO_CREATE)
+        context?.bindService(Intent(context, PlaybackService::class.java), connection,
+            Context.BIND_AUTO_CREATE)
         isServiceBound = true
     }
 
@@ -90,6 +92,10 @@ class MusicPlayerViewModel(var context: Context?): ViewModel() {
             it.setPlayMode(newMode)
             playModeLiveData.value = newMode
         }
+    }
+
+    fun showSongs() {
+
     }
 
     fun unsubscribe() {

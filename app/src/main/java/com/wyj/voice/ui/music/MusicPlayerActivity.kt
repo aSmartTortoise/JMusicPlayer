@@ -47,7 +47,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: savedInstanceState:$savedInstanceState")
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_music_player)
         BarUtils.transparentNavBar(this)
         dataBinding.titleBar.setPadding(0, BarUtils.getStatusBarHeight(), 0, 0)
@@ -68,6 +67,10 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             getLocalSongs()
         }
         subscribeService()
+        initListener()
+    }
+
+    private fun initListener() {
         dataBinding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -86,6 +89,14 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                 }
             }
         })
+        dataBinding.buttonSongList.setOnClickListener {
+            player?.getPlayList()?.let {
+                val songListDialog = SongListDialog(this).apply {
+                    show()
+                }
+                songListDialog.setSongs(it.songs)
+            }
+        }
     }
 
     private fun subscribeService() {
