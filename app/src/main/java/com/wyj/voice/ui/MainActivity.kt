@@ -3,14 +3,18 @@ package com.wyj.voice.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaRecorder
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.blankj.utilcode.util.LogUtils
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMainBinding
 import com.wyj.voice.manager.PreferenceManager
@@ -38,9 +42,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
         const val REQ_PER_CODE = 1
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: wyj")
+        LogUtils.d("onCreate")
         setContentView(R.layout.activity_main)
         BarUtils.transparentStatusBar(this)
         dataBinding =
@@ -50,6 +55,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                     tvLocalMusic.setOnClickListener(this@MainActivity)
                     playerBar.playCallback = this@MainActivity
                 }
+        val mediaRecorder: MediaRecorder = MediaRecorder(this).apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            val outputFilePath = "${externalCacheDir}/audio_test.3gp"
+            setOutputFile(outputFilePath)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        }
     }
 
     override fun onClick(v: View?) {

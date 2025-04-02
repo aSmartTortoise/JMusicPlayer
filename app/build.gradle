@@ -18,10 +18,25 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    print("path:${rootProject.getProjectDir().path}/JMusicPlayerKey.jks")
+    signingConfigs {
+        release {
+            storeFile file('../JMusicPlayerKey.jks')
+            storePassword "123456"
+            keyAlias "JMP"
+            keyPassword "123456"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true //开启资源压缩
+            minifyEnabled true //开启混淆
+            zipAlignEnabled true //k对齐
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -56,4 +71,6 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"//lifecycleScope, coroutine
     implementation "androidx.activity:activity-ktx:1.5.1" // androidx
+
+    implementation 'com.blankj:utilcodex:1.31.1'
 }
