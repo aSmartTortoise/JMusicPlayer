@@ -213,7 +213,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         cancelPlayProgressJob()
         playProgressJob = flow {
             repeat(Int.MAX_VALUE) {
-                Log.d(TAG, "scheduleTask: isActive:${currentCoroutineContext()[Job]?.isActive}")
                 player?.let {
                     if (it.isPlaying()) {
                         emit(it.getProgress())
@@ -224,7 +223,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         }
             .flowOn(Dispatchers.IO)
             .onEach {
-                Log.d(TAG, "scheduleTask: each progress:$it")
                 if (!this@MusicPlayerActivity.isFinishing) {
                     updateProgressTextWithDuration(it)
                 }

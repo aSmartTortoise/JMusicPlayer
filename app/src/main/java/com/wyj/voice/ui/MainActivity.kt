@@ -55,13 +55,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                     tvLocalMusic.setOnClickListener(this@MainActivity)
                     playerBar.playCallback = this@MainActivity
                 }
-        val mediaRecorder: MediaRecorder = MediaRecorder(this).apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            val outputFilePath = "${externalCacheDir}/audio_test.3gp"
-            setOutputFile(outputFilePath)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-        }
+//        val mediaRecorder: MediaRecorder = MediaRecorder(this).apply {
+//            setAudioSource(MediaRecorder.AudioSource.MIC)
+//            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+//            val outputFilePath = "${externalCacheDir}/audio_test.3gp"
+//            setOutputFile(outputFilePath)
+//            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+//        }
     }
 
     override fun onClick(v: View?) {
