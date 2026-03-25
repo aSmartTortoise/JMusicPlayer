@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -130,12 +131,17 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_play -> {
+                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Manifest.permission.READ_MEDIA_AUDIO
+                } else {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }
                 if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(
-                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        this, permission
                     )
                 ) {
                     ActivityCompat.requestPermissions(
-                        this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        this, arrayOf(permission),
                         REQ_PER_CODE
                     )
                 } else {

@@ -67,12 +67,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.tv_local_music -> {
+                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Manifest.permission.READ_MEDIA_AUDIO
+                } else {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }
                 if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(
-                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        this, permission
                     )
                 ) {
                     ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        arrayOf(permission),
                         REQ_PER_CODE
                     )
                 } else {
