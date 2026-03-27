@@ -7,6 +7,8 @@
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+<!--    https://developer.android.com/develop/ui/views/notifications/notification-permission?hl=zh-cn-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -25,10 +27,12 @@
             android:exported="false"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+<!--        https://developer.android.com/about/versions/14/changes/fgs-types-required?hl=zh-cn-->
         <service
             android:name=".player.PlaybackService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" >
             <intent-filter>
                 <action android:name="com.wyj.voice.ACTION.PLAY_TOGGLE"/>
                 <action android:name="com.wyj.voice.ACTION.PLAY_LAST"/>

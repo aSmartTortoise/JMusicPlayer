@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     companion object {
         private const val TAG = "MainActivity"
         const val REQ_PER_CODE = 1
+        const val REQ_NOTIFICATION_CODE = 2
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -149,6 +150,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     private fun subscribeService() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQ_NOTIFICATION_CODE)
+            }
+        }
         if (player == null) {
             playerViewModel = MusicPlayerViewModel(this).apply {
                 playbackServiceLiveData.observe(this@MainActivity) { player ->

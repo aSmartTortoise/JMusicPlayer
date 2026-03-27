@@ -1,5 +1,7 @@
 package com.wyj.voice.ui.music
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -9,6 +11,7 @@ import android.util.Log
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +41,7 @@ import kotlinx.coroutines.flow.*
 class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     companion object {
         const val TAG = "MusicPlayerActivity"
+        const val REQ_NOTIFICATION_CODE = 2
     }
     private var musicViewModel: LocalMusicViewModel? = null
     private var playerViewModel: MusicPlayerViewModel? = null
@@ -100,6 +104,14 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     }
 
     private fun subscribeService() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQ_NOTIFICATION_CODE)
+            }
+        }
         playerViewModel = MusicPlayerViewModel(this).apply {
             playbackServiceLiveData.observe(this@MusicPlayerActivity) {
                 Log.d(TAG, "subscribeService: wyj player:$it")
