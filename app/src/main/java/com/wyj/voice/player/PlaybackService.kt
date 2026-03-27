@@ -65,7 +65,12 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
                     if (isPlaying()) {
                         pause()
                     }
-                    stopForeground(true)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        stopForeground(true)
+                    }
                     unregisterCallback(this)
                     registerPlaybackCallback = false
                 }
@@ -87,7 +92,12 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     }
 
     override fun stopService(name: Intent?): Boolean {
-        stopForeground(true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        } else {
+            @Suppress("DEPRECATION")
+            stopForeground(true)
+        }
         unregisterCallback(this)
         registerPlaybackCallback = true
         return super.stopService(name)
