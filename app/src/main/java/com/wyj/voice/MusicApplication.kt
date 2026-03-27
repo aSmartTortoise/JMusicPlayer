@@ -3,7 +3,7 @@ package com.wyj.voice
 import android.app.Application
 import android.util.Log
 import com.blankj.utilcode.util.LogUtils
-import kotlin.math.log
+
 
 /**
  *  author : jie wang
@@ -11,18 +11,18 @@ import kotlin.math.log
  *  description :
  */
 class MusicApplication : Application() {
-    val TAG = MusicApplication::class.java.simpleName
     companion object {
-
+        private const val TAG = "MusicApplication"
     }
 
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate:")
+        val logDir = (externalCacheDir ?: cacheDir).absolutePath + "/logs"
         LogUtils.getConfig()
-            .setDir(externalCacheDir?.absolutePath + "/logs")
+            .setDir(logDir)
             .setBorderSwitch(false)
-            .isLogHeadSwitch = false
-        LogUtils.d("onCreate, external path:${externalCacheDir?.absolutePath + "/logs"}")
+            .setLogHeadSwitch(false)
+        LogUtils.d("onCreate, log dir:$logDir")
     }
 }
