@@ -218,7 +218,7 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
             val channelId = "my_service"
             val chan = NotificationChannel(
                 channelId,
-                "My Background Service", NotificationManager.IMPORTANCE_HIGH
+                "My Background Service", NotificationManager.IMPORTANCE_LOW
             ).apply {
                 lightColor = Color.BLUE
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
