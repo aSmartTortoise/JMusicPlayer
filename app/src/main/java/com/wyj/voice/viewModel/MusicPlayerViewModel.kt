@@ -16,7 +16,7 @@ import com.wyj.voice.player.PlaybackService
 import com.wyj.voice.ui.music.SongListDialog
 import io.reactivex.disposables.CompositeDisposable
 
-class MusicPlayerViewModel(var context: Context?): ViewModel() {
+class MusicPlayerViewModel(private val context: Context): ViewModel() {
     companion object {
         private const val TAG = "MusicPlayerViewModel"
     }
@@ -61,13 +61,15 @@ class MusicPlayerViewModel(var context: Context?): ViewModel() {
     }
 
     private fun bindPlaybackService() {
-        context?.bindService(Intent(context, PlaybackService::class.java), connection,
+        context.bindService(
+            Intent(context, PlaybackService::class.java),
+            connection,
             Context.BIND_AUTO_CREATE)
         isServiceBound = true
     }
 
     fun retrieveLastPlayMode() {
-        val lastPlayMode: PlayMode = PreferenceManager.lastPlayMode(context!!)
+        val lastPlayMode: PlayMode = PreferenceManager.lastPlayMode(context)
 //        mView.updatePlayMode(lastPlayMode)
     }
 
@@ -86,9 +88,9 @@ class MusicPlayerViewModel(var context: Context?): ViewModel() {
 
     fun onPlayModeToggleAction() {
         playbackServiceLiveData.value?.let {
-            val current = PreferenceManager.lastPlayMode(context!!)
+            val current = PreferenceManager.lastPlayMode(context)
             val newMode = PlayMode.switchNextMode(current)
-            PreferenceManager.setPlayMode(context!!, newMode)
+            PreferenceManager.setPlayMode(context, newMode)
             it.setPlayMode(newMode)
             playModeLiveData.value = newMode
         }
@@ -100,9 +102,6 @@ class MusicPlayerViewModel(var context: Context?): ViewModel() {
 
     fun unsubscribe() {
         unbindPlaybackService()
-        // Release context reference
-        context = null
-//        mView = null
         comDisposable?.clear()
     }
 
@@ -110,7 +109,7 @@ class MusicPlayerViewModel(var context: Context?): ViewModel() {
         Log.d(TAG, "unbindPlaybackService: wyj isServiceBound:$isServiceBound")
         if (isServiceBound) {
             // Detach our existing connection.
-            context?.unbindService(connection)
+            context.unbindService(connection)
             isServiceBound = false
         }
     }

@@ -119,7 +119,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                     registerCallback(this@MusicPlayerActivity)
                 }
                 onSongUpdated(player?.getPlayingSong())
-                updatePlayMode(PreferenceManager.lastPlayMode(context!!))
+                updatePlayMode(PreferenceManager.lastPlayMode(this@MusicPlayerActivity))
             }
             playModeLiveData.observe(this@MusicPlayerActivity) {
                 updatePlayMode(it)
