@@ -24,7 +24,6 @@ import com.wyj.voice.databinding.ActivityMusicPlayerBinding
 import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
-import com.wyj.voice.player.PlayList
 import com.wyj.voice.player.PlayMode
 import com.wyj.voice.transform.CircleTransform
 import com.wyj.voice.utils.*
@@ -33,7 +32,6 @@ import com.wyj.voice.viewModel.MusicPlayerViewModel
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
@@ -44,9 +42,8 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         const val REQ_NOTIFICATION_CODE = 2
     }
     private var musicViewModel: LocalMusicViewModel? = null
-    private var playerViewModel: MusicPlayerViewModel? = null
+    private lateinit var playerViewModel: MusicPlayerViewModel
     private lateinit var dataBinding: ActivityMusicPlayerBinding
-    private var player: IPlayback? = null
     private var playProgressJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,13 +85,13 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 seekTo(getDuration(seekBar.progress))
-                if (player?.isPlaying() == true) {
+                if (playerViewModel.isPlaying()) {
                     launchUpdateProgressJob()
                 }
             }
         })
         dataBinding.buttonSongList.setOnClickListener {
-            player?.getPlayList()?.let {
+            playerViewModel.getPlayList()?.let {
                 val songListDialog = SongListDialog(this).apply {
                     show()
                 }
@@ -113,13 +110,13 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             }
         }
         playerViewModel = MusicPlayerViewModel(this).apply {
-            playbackServiceLiveData.observe(this@MusicPlayerActivity) {
-                Log.d(TAG, "subscribeService: wyj player:$it")
-                player = it.apply {
+            serviceBoundLiveData.observe(this@MusicPlayerActivity) { bound ->
+                if (bound) {
+                    Log.d(TAG, "subscribeService: wyj service bound")
                     registerCallback(this@MusicPlayerActivity)
+                    onSongUpdated(getPlayingSong())
+                    updatePlayMode(PreferenceManager.lastPlayMode(this@MusicPlayerActivity))
                 }
-                onSongUpdated(player?.getPlayingSong())
-                updatePlayMode(PreferenceManager.lastPlayMode(this@MusicPlayerActivity))
             }
             playModeLiveData.observe(this@MusicPlayerActivity) {
                 updatePlayMode(it)
@@ -127,24 +124,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             subscribe()
         }
         dataBinding.playerViewModel = playerViewModel
-    }
-
-    private fun playSong(song: Song) {
-        val playList = PlayList(song)
-        playSong(playList, 0)
-    }
-
-    private fun playSong(songs: List<Song>) {
-        val playList = PlayList()
-        playList.addSong(songs, 0)
-        playSong(playList, 0)
-    }
-
-    private fun playSong(playList: PlayList, playIndex: Int) {
-        playList.playMode = PreferenceManager.lastPlayMode(this)
-        player?.play(playList, playIndex)
-        val song = playList.getCurrentSong()
-        onSongUpdated(song)
     }
 
     private fun onSongUpdated(song: Song?) {
@@ -205,9 +184,9 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             } )
 
         dataBinding.siv.pauseRotateAnimation()
-        Log.d(TAG, "onSongUpdated: wyj isPlaying:${player?.isPlaying()}")
+        Log.d(TAG, "onSongUpdated: wyj isPlaying:${playerViewModel.isPlaying()}")
         // - Album rotation
-        if (player?.isPlaying() == true) {
+        if (playerViewModel.isPlaying()) {
             dataBinding.siv.startRotateAnimation()
             launchUpdateProgressJob()
             dataBinding.buttonPlayToggle.setImageResource(R.drawable.ic_pause)
@@ -225,7 +204,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         cancelPlayProgressJob()
         playProgressJob = flow {
             repeat(Int.MAX_VALUE) {
-                player?.let {
+                playerViewModel.let {
                     if (it.isPlaying()) {
                         emit(it.getProgress())
                         delay(50)
@@ -271,7 +250,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     }
 
     private fun getCurrentSongDuration(): Int {
-        val currentSong: Song? = player?.getPlayingSong()
+        val currentSong: Song? = playerViewModel.getPlayingSong()
         var duration = 0
         if (currentSong != null) {
             duration = currentSong.duration
@@ -290,7 +269,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     }
 
     private fun seekTo(duration: Int) {
-        player?.seekTo(duration)
+        playerViewModel.seekTo(duration)
     }
 
     override fun onSwitchLast(last: Song) {
@@ -326,12 +305,8 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
 
     override fun onDestroy() {
         cancelPlayProgressJob()
-        if (player != null && playerViewModel != null) {
-            playerViewModel?.unsubscribe()
-            playerViewModel = null
-            player?.unregisterCallback(this)
-            player = null
-        }
+        playerViewModel.unregisterCallback(this)
+        playerViewModel.unsubscribe()
         musicViewModel?.let {
             if (it.comDisposable.isDisposed) {
                 it.comDisposable.dispose()

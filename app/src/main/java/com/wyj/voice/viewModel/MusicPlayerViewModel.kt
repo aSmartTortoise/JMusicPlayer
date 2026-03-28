@@ -7,57 +7,40 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wyj.voice.manager.PreferenceManager
+import com.wyj.voice.model.Song
+import com.wyj.voice.player.IPlayback
+import com.wyj.voice.player.PlayList
 import com.wyj.voice.player.PlayMode
 import com.wyj.voice.player.PlaybackService
-import com.wyj.voice.ui.music.SongListDialog
-import io.reactivex.disposables.CompositeDisposable
 
 class MusicPlayerViewModel(private val context: Context): ViewModel() {
     companion object {
         private const val TAG = "MusicPlayerViewModel"
     }
     @SuppressLint("StaticFieldLeak")
-    private var isServiceBound = false
-    private var comDisposable: CompositeDisposable? = null
-    var playbackServiceLiveData = MutableLiveData<PlaybackService>()
+    private var isServiceBind = false
+    private var player: PlaybackService? = null
+    var serviceBoundLiveData = MutableLiveData<Boolean>()
     var playModeLiveData = MutableLiveData<PlayMode>()
-
-    init {
-        comDisposable = CompositeDisposable()
-    }
 
     private val connection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val playbackService: PlaybackService = (service as PlaybackService.LocalBinder).service
-            playbackServiceLiveData.value = playbackService
-//            mView.onPlaybackServiceBound(mPlaybackService)
-//            mView.onSongUpdated(mPlaybackService.getPlayingSong())
+            player = (service as PlaybackService.LocalBinder).service
+            serviceBoundLiveData.value = true
         }
 
         override fun onServiceDisconnected(className: ComponentName) {
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
-            // Because it is running in our same process, we should never
-            // see this happen.
-            playbackServiceLiveData.value = null
-//            mView.onPlaybackServiceUnbound()
+            player = null
+            serviceBoundLiveData.value = false
         }
     }
 
     fun subscribe() {
         bindPlaybackService()
         retrieveLastPlayMode()
-
-        // TODO
-//        playbackService?.let {
-//            if (it.isPlaying()) {
-////                mView.onSongUpdated(mPlaybackService.getPlayingSong())
-//            }
-//        }
     }
 
     private fun bindPlaybackService() {
@@ -65,16 +48,53 @@ class MusicPlayerViewModel(private val context: Context): ViewModel() {
             Intent(context, PlaybackService::class.java),
             connection,
             Context.BIND_AUTO_CREATE)
-        isServiceBound = true
+        isServiceBind = true
     }
 
-    fun retrieveLastPlayMode() {
-        val lastPlayMode: PlayMode = PreferenceManager.lastPlayMode(context)
-//        mView.updatePlayMode(lastPlayMode)
+    private fun retrieveLastPlayMode() {
+        PreferenceManager.lastPlayMode(context)
     }
+
+    fun registerCallback(callback: IPlayback.Callback) {
+        player?.registerCallback(callback)
+    }
+
+    fun unregisterCallback(callback: IPlayback.Callback) {
+        player?.unregisterCallback(callback)
+    }
+
+    fun playSong(song: Song) {
+        val playList = PlayList(song)
+        playSong(playList, 0)
+    }
+
+    fun playSongs(songs: List<Song>) {
+        val playList = PlayList()
+        playList.addSong(songs, 0)
+        playSong(playList, 0)
+    }
+
+    fun playSong(playList: PlayList, playIndex: Int) {
+        playList.playMode = PreferenceManager.lastPlayMode(context)
+        player?.play(playList, playIndex)
+    }
+
+    fun getPlayingSong(): Song? = player?.getPlayingSong()
+
+    fun getPlayList(): PlayList? = player?.getPlayList()
+
+    fun hasPlayList(): Boolean = !player?.getPlayList()?.songs.isNullOrEmpty()
+
+    fun isPlaying(): Boolean = player?.isPlaying() ?: false
+
+    fun seekTo(progress: Int) {
+        player?.seekTo(progress)
+    }
+
+    fun getProgress(): Int = player?.getProgress() ?: 0
 
     fun onPlayToggleAction() {
-        playbackServiceLiveData.value?.let {
+        player?.let {
             if (it.isPlaying()) it.pause() else {
                 it.registerPlaybackCallback()
                 it.play()
@@ -82,12 +102,12 @@ class MusicPlayerViewModel(private val context: Context): ViewModel() {
         }
     }
 
-    fun playLast() = playbackServiceLiveData.value?.playLast()
+    fun playLast() = player?.playLast()
 
-    fun playNext() = playbackServiceLiveData.value?.playNext()
+    fun playNext() = player?.playNext()
 
     fun onPlayModeToggleAction() {
-        playbackServiceLiveData.value?.let {
+        player?.let {
             val current = PreferenceManager.lastPlayMode(context)
             val newMode = PlayMode.switchNextMode(current)
             PreferenceManager.setPlayMode(context, newMode)
@@ -96,21 +116,16 @@ class MusicPlayerViewModel(private val context: Context): ViewModel() {
         }
     }
 
-    fun showSongs() {
-
-    }
-
     fun unsubscribe() {
         unbindPlaybackService()
-        comDisposable?.clear()
+        player = null
     }
 
     private fun unbindPlaybackService() {
-        Log.d(TAG, "unbindPlaybackService: wyj isServiceBound:$isServiceBound")
-        if (isServiceBound) {
-            // Detach our existing connection.
+        Log.d(TAG, "unbindPlaybackService: wyj isServiceBind:$isServiceBind")
+        if (isServiceBind) {
             context.unbindService(connection)
-            isServiceBound = false
+            isServiceBind = false
         }
     }
 }

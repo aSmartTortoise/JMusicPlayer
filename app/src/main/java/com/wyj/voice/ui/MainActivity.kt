@@ -3,13 +3,11 @@ package com.wyj.voice.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -17,10 +15,8 @@ import androidx.databinding.DataBindingUtil
 import com.blankj.utilcode.util.LogUtils
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMainBinding
-import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
-import com.wyj.voice.player.PlayList
 import com.wyj.voice.ui.music.MusicPlayerActivity
 import com.wyj.voice.ui.music.SongListDialog
 import com.wyj.voice.utils.BarUtils
@@ -32,9 +28,8 @@ import com.wyj.voice.viewModel.MusicPlayerViewModel
 class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.PlayCallback,
     IPlayback.Callback {
     private var musicViewModel: LocalMusicViewModel? = null
-    private var playerViewModel: MusicPlayerViewModel? = null
+    private lateinit var playerViewModel: MusicPlayerViewModel
     private var localSongs: List<Song>? = null
-    private var player: IPlayback? = null
     private lateinit var dataBinding: ActivityMainBinding
 
     companion object {
@@ -43,7 +38,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
         const val REQ_NOTIFICATION_CODE = 2
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         LogUtils.d("onCreate")
@@ -56,13 +50,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                     tvLocalMusic.setOnClickListener(this@MainActivity)
                     playerBar.playCallback = this@MainActivity
                 }
-//        val mediaRecorder: MediaRecorder = MediaRecorder(this).apply {
-//            setAudioSource(MediaRecorder.AudioSource.MIC)
-//            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-//            val outputFilePath = "${externalCacheDir}/audio_test.3gp"
-//            setOutputFile(outputFilePath)
-//            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-//        }
+        subscribeService()
     }
 
     override fun onClick(v: View?) {
@@ -103,20 +91,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
         if (localSongs == null) {
             Toast.makeText(this, "先点击本地音乐获取音乐", Toast.LENGTH_LONG).show()
         } else {
-            if (player == null) {
-                subscribeService()
-            } else {
-                player?.let {
-                    if (it.isPlaying()) it.pause() else {
-                        it.play()
-                    }
+            if (!playerViewModel.hasPlayList()) {
+                localSongs?.let {
+                    playerViewModel.playSongs(it)
+                    dataBinding.playerBar.setSong(playerViewModel.getPlayingSong())
+                    dataBinding.playerBar.setPlaying(true)
                 }
+            } else {
+                playerViewModel.onPlayToggleAction()
             }
         }
     }
 
     override fun onShowSongs() {
-        player?.getPlayList()?.let {
+        playerViewModel.getPlayList()?.let {
             val songListDialog = SongListDialog(this).apply {
                 show()
             }
@@ -125,11 +113,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     override fun onOpenMusicPlayer() {
-        if (player != null) {
-            Intent(this, MusicPlayerActivity::class.java).apply {
-                this@MainActivity.startActivity(this)
-                overridePendingTransition(R.anim.bottom_in,R.anim.bottom_silent)
-            }
+        Intent(this, MusicPlayerActivity::class.java).apply {
+            this@MainActivity.startActivity(this)
+            overridePendingTransition(R.anim.bottom_in, R.anim.bottom_silent)
         }
     }
 
@@ -158,41 +144,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                     REQ_NOTIFICATION_CODE)
             }
         }
-        if (player == null) {
-            playerViewModel = MusicPlayerViewModel(this).apply {
-                playbackServiceLiveData.observe(this@MainActivity) { player ->
-                    this@MainActivity.player = player.apply {
-                        registerCallback(this@MainActivity)
-                    }
+        playerViewModel = MusicPlayerViewModel(this).apply {
+            serviceBoundLiveData.observe(this@MainActivity) { bound ->
+                if (bound) {
+                    registerCallback(this@MainActivity)
                     localSongs?.let {
                         if (it.isNotEmpty()) {
-                            playSong(it)
-                            dataBinding.playerBar.setSong(player?.getPlayingSong())
+                            playSongs(it)
+                            dataBinding.playerBar.setSong(getPlayingSong())
                             dataBinding.playerBar.setPlaying(true)
                         }
                     }
                 }
-                subscribe()
             }
+            subscribe()
         }
-    }
-
-    private fun playSong(songs: List<Song>) {
-        val playList = PlayList()
-        playList.addSong(songs, 0)
-        playSong(playList, 0)
-    }
-
-    private fun playSong(playList: PlayList, playIndex: Int) {
-        playList.playMode = PreferenceManager.lastPlayMode(this)
-        player?.play(playList, playIndex)
-        val song = playList.getCurrentSong()
-        onSongUpdated(song)
     }
 
     private fun onSongUpdated(song: Song?) {
         dataBinding.playerBar.setSong(song)
-        dataBinding.playerBar.setPlaying(player?.isPlaying()?: false)
+        dataBinding.playerBar.setPlaying(playerViewModel.isPlaying())
     }
 
     override fun onRequestPermissionsResult(
@@ -219,15 +190,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                 musicViewModel = null
             }
         }
-
-        if (player != null && playerViewModel != null) {
-            playerViewModel?.unsubscribe()
-            playerViewModel = null
-            player = null
-        }
+        playerViewModel.unregisterCallback(this)
+        playerViewModel.unsubscribe()
     }
-
-
-
-
 }
