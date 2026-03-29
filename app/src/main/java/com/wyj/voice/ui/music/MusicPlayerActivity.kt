@@ -149,6 +149,8 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             .load(song.album)
             .apply(RequestOptions()
                 .placeholder(R.drawable.default_record_album)
+                .error(R.drawable.default_record_album)       // 封面加载失败时显示默认图
+                .fallback(R.drawable.default_record_album)  // 封面路径为null时显示默认图
                 .transform(CircleTransform())
                 .override(size, size))
             .into(dataBinding.siv)
@@ -165,6 +167,8 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             .asBitmap()
             .load(song.album)
             .placeholder(gradientBackgroundDrawable)
+            .error(gradientBackgroundDrawable)
+            .fallback(gradientBackgroundDrawable)
             .apply(
                 RequestOptions()
                     .override(size, size)
@@ -178,6 +182,12 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                         displayMetrics.heightPixels
                     )
                     dataBinding.ivBg.setImageBitmap(zoomBitmap)
+                }
+
+                // CustomTarget不会自动应用error/fallback图，需手动清除旧封面并恢复默认渐变背景
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    dataBinding.ivBg.setImageDrawable(null)
+                    dataBinding.ivBg.background = gradientBackgroundDrawable
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {
@@ -307,7 +317,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     override fun onDestroy() {
         cancelPlayProgressJob()
         playerViewModel.unregisterCallback(this)
-        playerViewModel.unsubscribe()
         super.onDestroy()
     }
 }
