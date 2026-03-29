@@ -50,32 +50,49 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                 }
         initMusicViewModel()
         subscribeService()
+        autoLoadMusicIfPermitted()
     }
 
     private fun initMusicViewModel() {
-        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java]
+        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
+            songs.observe(this@MainActivity) {
+                if (!it.isNullOrEmpty()) {
+                    dataBinding.tvLocalMusic.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun getStoragePermission(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_AUDIO
+        } else {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }
+    }
+
+    private fun hasStoragePermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, getStoragePermission()) ==
+                PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun autoLoadMusicIfPermitted() {
+        if (hasStoragePermission()) {
+            dataBinding.tvLocalMusic.visibility = View.GONE
+            musicViewModel.getLocalSongs()
+        }
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.tv_local_music -> {
-                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    Manifest.permission.READ_MEDIA_AUDIO
-                } else {
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                }
-                if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(
-                        this, permission
-                    )
-                ) {
+                if (!hasStoragePermission()) {
                     ActivityCompat.requestPermissions(this,
-                        arrayOf(permission),
+                        arrayOf(getStoragePermission()),
                         REQ_PER_CODE
                     )
-                } else {
-                    if (!musicViewModel.hasSongs()) {
-                        musicViewModel.getLocalSongs()
-                    }
+                } else if (!musicViewModel.hasSongs()) {
+                    musicViewModel.getLocalSongs()
                 }
             }
         }
@@ -170,6 +187,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
             if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 LogUtils.d("$TAG onRequestPermissionsResult: storage permission not granted.")
             } else {
+                dataBinding.tvLocalMusic.visibility = View.GONE
                 musicViewModel.getLocalSongs()
             }
         }
