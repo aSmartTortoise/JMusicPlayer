@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.wyj.voice.manager.PreferenceManager
@@ -17,12 +16,10 @@ import com.wyj.voice.player.PlayMode
 import com.wyj.voice.player.PlaybackService
 
 class MusicPlayerViewModel(application: Application) : AndroidViewModel(application) {
-    companion object {
-        private const val TAG = "MusicPlayerViewModel"
-    }
     private val context: Context get() = getApplication()
     private var isServiceBind = false
     private var player: PlaybackService? = null
+    private var registeredCallback: IPlayback.Callback? = null
     var serviceBoundLiveData = MutableLiveData<Boolean>()
     var playModeLiveData = MutableLiveData<PlayMode>()
 
@@ -39,7 +36,9 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun subscribe() {
-        bindPlaybackService()
+        if (!isServiceBind) {
+            bindPlaybackService()
+        }
         retrieveLastPlayMode()
     }
 
@@ -56,10 +55,12 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun registerCallback(callback: IPlayback.Callback) {
+        registeredCallback = callback
         player?.registerCallback(callback)
     }
 
     fun unregisterCallback(callback: IPlayback.Callback) {
+        registeredCallback = null
         player?.unregisterCallback(callback)
     }
 
@@ -116,13 +117,17 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun unsubscribe() {
+    override fun onCleared() {
+        super.onCleared()
+        registeredCallback?.let {
+            player?.unregisterCallback(it)
+            registeredCallback = null
+        }
         unbindPlaybackService()
         player = null
     }
 
     private fun unbindPlaybackService() {
-        Log.d(TAG, "unbindPlaybackService: wyj isServiceBind:$isServiceBind")
         if (isServiceBind) {
             context.unbindService(connection)
             isServiceBind = false
