@@ -1,14 +1,14 @@
 package com.wyj.voice.viewModel
 
-import android.annotation.SuppressLint
+import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
@@ -16,11 +16,11 @@ import com.wyj.voice.player.PlayList
 import com.wyj.voice.player.PlayMode
 import com.wyj.voice.player.PlaybackService
 
-class MusicPlayerViewModel(private val context: Context): ViewModel() {
+class MusicPlayerViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val TAG = "MusicPlayerViewModel"
     }
-    @SuppressLint("StaticFieldLeak")
+    private val context: Context get() = getApplication()
     private var isServiceBind = false
     private var player: PlaybackService? = null
     var serviceBoundLiveData = MutableLiveData<Boolean>()

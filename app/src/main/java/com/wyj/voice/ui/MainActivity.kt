@@ -23,6 +23,7 @@ import com.wyj.voice.utils.BarUtils
 import com.wyj.voice.ui.view.MusicPlayerBar
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import com.wyj.voice.viewModel.MusicPlayerViewModel
+import androidx.lifecycle.ViewModelProvider
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.PlayCallback,
@@ -41,7 +42,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         LogUtils.d("onCreate")
-        setContentView(R.layout.activity_main)
         BarUtils.transparentStatusBar(this)
         dataBinding =
             DataBindingUtil.setContentView<ActivityMainBinding?>(this, R.layout.activity_main)
@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                     REQ_NOTIFICATION_CODE)
             }
         }
-        playerViewModel = MusicPlayerViewModel(this).apply {
+        playerViewModel = ViewModelProvider(this)[MusicPlayerViewModel::class.java].apply {
             serviceBoundLiveData.observe(this@MainActivity) { bound ->
                 if (bound) {
                     registerCallback(this@MainActivity)

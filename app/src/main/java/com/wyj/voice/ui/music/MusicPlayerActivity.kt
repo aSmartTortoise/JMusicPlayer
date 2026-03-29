@@ -29,6 +29,7 @@ import com.wyj.voice.transform.CircleTransform
 import com.wyj.voice.utils.*
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import com.wyj.voice.viewModel.MusicPlayerViewModel
+import androidx.lifecycle.ViewModelProvider
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -109,7 +110,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                     REQ_NOTIFICATION_CODE)
             }
         }
-        playerViewModel = MusicPlayerViewModel(this).apply {
+        playerViewModel = ViewModelProvider(this)[MusicPlayerViewModel::class.java].apply {
             serviceBoundLiveData.observe(this@MusicPlayerActivity) { bound ->
                 if (bound) {
                     Log.d(TAG, "subscribeService: wyj service bound")
