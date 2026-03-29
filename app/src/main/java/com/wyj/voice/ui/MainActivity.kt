@@ -5,13 +5,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.LogUtils
 import com.wyj.voice.R
 import com.wyj.voice.databinding.ActivityMainBinding
@@ -19,18 +19,16 @@ import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
 import com.wyj.voice.ui.music.MusicPlayerActivity
 import com.wyj.voice.ui.music.SongListDialog
-import com.wyj.voice.utils.BarUtils
 import com.wyj.voice.ui.view.MusicPlayerBar
+import com.wyj.voice.utils.BarUtils
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import com.wyj.voice.viewModel.MusicPlayerViewModel
-import androidx.lifecycle.ViewModelProvider
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.PlayCallback,
     IPlayback.Callback {
     private lateinit var musicViewModel: LocalMusicViewModel
     private lateinit var playerViewModel: MusicPlayerViewModel
-    private var localSongs: List<Song>? = null
     private lateinit var dataBinding: ActivityMainBinding
 
     companion object {
@@ -50,7 +48,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                     tvLocalMusic.setOnClickListener(this@MainActivity)
                     playerBar.playCallback = this@MainActivity
                 }
+        initMusicViewModel()
         subscribeService()
+    }
+
+    private fun initMusicViewModel() {
+        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
+            songs.observe(this@MainActivity) {
+                // LiveData observed, access via musicViewModel.songs.value
+            }
+        }
     }
 
     override fun onClick(v: View?) {
@@ -70,33 +77,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                         REQ_PER_CODE
                     )
                 } else {
-                    if (localSongs == null || localSongs?.isEmpty() == true) {
-                        getLocalMusic()
+                    if (musicViewModel.songs.value.isNullOrEmpty()) {
+                        musicViewModel.getLocalSongs()
                     }
                 }
             }
         }
     }
 
-    private fun getLocalMusic() {
-        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
-            songs.observe(this@MainActivity) {
-                localSongs = it
-            }
-            getLocalSongs()
-        }
-    }
-
     override fun onPlayToggleAction() {
-        if (localSongs == null) {
+        val songs = musicViewModel.songs.value
+        if (songs.isNullOrEmpty()) {
             Toast.makeText(this, "先点击本地音乐获取音乐", Toast.LENGTH_LONG).show()
         } else {
             if (!playerViewModel.hasPlayList()) {
-                localSongs?.let {
-                    playerViewModel.playSongs(it)
-                    dataBinding.playerBar.setSong(playerViewModel.getPlayingSong())
-                    dataBinding.playerBar.setPlaying(true)
-                }
+                playerViewModel.playSongs(songs)
+                dataBinding.playerBar.setSong(playerViewModel.getPlayingSong())
+                dataBinding.playerBar.setPlaying(true)
             } else {
                 playerViewModel.onPlayToggleAction()
             }
@@ -148,11 +145,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
             serviceBoundLiveData.observe(this@MainActivity) { bound ->
                 if (bound) {
                     registerCallback(this@MainActivity)
-                    localSongs?.let {
-                        if (it.isNotEmpty()) {
-                            playSongs(it)
-                            dataBinding.playerBar.setSong(getPlayingSong())
-                            dataBinding.playerBar.setPlaying(true)
+                    if (!hasPlayList()) {
+                        musicViewModel.songs.value?.let {
+                            if (it.isNotEmpty()) {
+                                playSongs(it)
+                                dataBinding.playerBar.setSong(getPlayingSong())
+                                dataBinding.playerBar.setPlaying(true)
+                            }
                         }
                     }
                 }
@@ -173,10 +172,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQ_PER_CODE) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "onRequestPermissionsResult: storage permission not granted.")
+            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                LogUtils.d("$TAG onRequestPermissionsResult: storage permission not granted.")
             } else {
-                getLocalMusic()
+                musicViewModel.getLocalSongs()
             }
         }
     }
@@ -184,6 +183,5 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     override fun onDestroy() {
         super.onDestroy()
         playerViewModel.unregisterCallback(this)
-        playerViewModel.unsubscribe()
     }
 }
