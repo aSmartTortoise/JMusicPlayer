@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.wyj.voice.R
 import com.wyj.voice.viewModel.LocalMusicViewModel
 import java.io.IOException
@@ -45,7 +46,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
     private var sbTime: AppCompatSeekBar? = null
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
-    private var musicViewModel: LocalMusicViewModel? = null
+    private lateinit var musicViewModel: LocalMusicViewModel
     private var playingIndex = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +86,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
             })
         }
 
-        musicViewModel = LocalMusicViewModel(this).apply {
+        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
             songs.observe(this@PlayMusicActivity) {
                 for (song in it) {
                     val path = song.path
@@ -145,7 +146,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
                         REQ_PER_CODE
                     )
                 } else {
-                    if (musicViewModel?.songs?.value?.isNotEmpty() == true) {
+                    if (musicViewModel.songs.value?.isNotEmpty() == true) {
                         initPlayerAndPlay()
                     }
                 }
@@ -225,7 +226,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
 
     private fun MediaPlayer.prepareToPlay() {
         try {
-            setDataSource(musicViewModel?.songs?.value!![playingIndex].path)
+            setDataSource(musicViewModel.songs.value!![playingIndex].path)
         } catch (e: IOException) {
             Log.d(TAG, "prepareToPlay: setDataSource error e:${e.message}")
         } catch (e: IllegalArgumentException) {
@@ -269,7 +270,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
             Log.d(TAG, "onCompletion: it is playing? ${it.isPlaying}")
         }
         timerTask?.cancel()
-        musicViewModel?.songs?.value?.let {
+        musicViewModel.songs.value?.let {
             var newIndex = playingIndex + 1
             if (newIndex >= it.size) {
                 newIndex = 0
@@ -291,12 +292,5 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
             timerTask = null
         }
         timer = null
-        musicViewModel?.let {
-            if (it.comDisposable.isDisposed) {
-                it.comDisposable.dispose()
-                it.comDisposable.clear()
-                musicViewModel = null
-            }
-        }
     }
 }

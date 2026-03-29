@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.PlayCallback,
     IPlayback.Callback {
-    private var musicViewModel: LocalMusicViewModel? = null
+    private lateinit var musicViewModel: LocalMusicViewModel
     private lateinit var playerViewModel: MusicPlayerViewModel
     private var localSongs: List<Song>? = null
     private lateinit var dataBinding: ActivityMainBinding
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     private fun getLocalMusic() {
-        musicViewModel = LocalMusicViewModel(this).apply {
+        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
             songs.observe(this@MainActivity) {
                 localSongs = it
             }
@@ -183,13 +183,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
 
     override fun onDestroy() {
         super.onDestroy()
-        musicViewModel?.let {
-            if (it.comDisposable.isDisposed) {
-                it.comDisposable.dispose()
-                it.comDisposable.clear()
-                musicViewModel = null
-            }
-        }
         playerViewModel.unregisterCallback(this)
         playerViewModel.unsubscribe()
     }

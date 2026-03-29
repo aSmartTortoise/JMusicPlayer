@@ -42,7 +42,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         const val TAG = "MusicPlayerActivity"
         const val REQ_NOTIFICATION_CODE = 2
     }
-    private var musicViewModel: LocalMusicViewModel? = null
+    private lateinit var musicViewModel: LocalMusicViewModel
     private lateinit var playerViewModel: MusicPlayerViewModel
     private lateinit var dataBinding: ActivityMusicPlayerBinding
     private var playProgressJob: Job? = null
@@ -63,7 +63,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             0.5f
         )
         dataBinding.ivBg.background = gradientBackgroundDrawable
-        musicViewModel = LocalMusicViewModel(this).apply {
+        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
             songs.observe(this@MusicPlayerActivity) {
             }
             getLocalSongs()
@@ -308,13 +308,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
         cancelPlayProgressJob()
         playerViewModel.unregisterCallback(this)
         playerViewModel.unsubscribe()
-        musicViewModel?.let {
-            if (it.comDisposable.isDisposed) {
-                it.comDisposable.dispose()
-                it.comDisposable.clear()
-                musicViewModel = null
-            }
-        }
         super.onDestroy()
     }
 }
