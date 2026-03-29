@@ -18,6 +18,10 @@ class LocalMusicViewModel(application: Application) : AndroidViewModel(applicati
 
     var songs: MutableLiveData<List<Song>> = MutableLiveData()
 
+    fun getSongs(): List<Song>? = songs.value
+
+    fun hasSongs(): Boolean = !songs.value.isNullOrEmpty()
+
     fun getLocalSongs() {
         SongRepository.queryLocalSongsFlow(getApplication())
             .onEach {

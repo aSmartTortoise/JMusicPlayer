@@ -53,11 +53,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     private fun initMusicViewModel() {
-        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
-            songs.observe(this@MainActivity) {
-                // LiveData observed, access via musicViewModel.songs.value
-            }
-        }
+        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java]
     }
 
     override fun onClick(v: View?) {
@@ -77,7 +73,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                         REQ_PER_CODE
                     )
                 } else {
-                    if (musicViewModel.songs.value.isNullOrEmpty()) {
+                    if (!musicViewModel.hasSongs()) {
                         musicViewModel.getLocalSongs()
                     }
                 }
@@ -86,12 +82,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
     }
 
     override fun onPlayToggleAction() {
-        val songs = musicViewModel.songs.value
-        if (songs.isNullOrEmpty()) {
+        if (!musicViewModel.hasSongs()) {
             Toast.makeText(this, "先点击本地音乐获取音乐", Toast.LENGTH_LONG).show()
         } else {
             if (!playerViewModel.hasPlayList()) {
-                playerViewModel.playSongs(songs)
+                playerViewModel.playSongs(musicViewModel.getSongs()!!)
                 dataBinding.playerBar.setSong(playerViewModel.getPlayingSong())
                 dataBinding.playerBar.setPlaying(true)
             } else {
@@ -146,7 +141,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                 if (bound) {
                     registerCallback(this@MainActivity)
                     if (!hasPlayList()) {
-                        musicViewModel.songs.value?.let {
+                        musicViewModel.getSongs()?.let {
                             if (it.isNotEmpty()) {
                                 playSongs(it)
                                 dataBinding.playerBar.setSong(getPlayingSong())
