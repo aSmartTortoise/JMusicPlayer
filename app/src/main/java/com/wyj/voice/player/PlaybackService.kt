@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.os.RemoteCallbackList
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -21,12 +22,40 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     companion object {
         private const val NOTIFICATION_ID = 1
         private const val TAG = "PlaybackService"
+        const val ACTION_BIND_REMOTE = "com.wyj.voice.action.BIND_PLAYBACK_REMOTE"
     }
 
     private lateinit var player: Player
     private var mContentViewBig: RemoteViews? = null
     private var mContentViewSmall: RemoteViews? = null
     private var registerPlaybackCallback: Boolean = false
+    private val remoteCallbackList = RemoteCallbackList<IPlaybackCallback>()
+
+    private val aidlBinder = object : IPlaybackService.Stub() {
+        override fun play(): Boolean = this@PlaybackService.play()
+        override fun playWithList(list: PlayList, startIndex: Int): Boolean =
+            this@PlaybackService.play(list, startIndex)
+        override fun pause(): Boolean = this@PlaybackService.pause()
+        override fun playLast(): Boolean = this@PlaybackService.playLast()
+        override fun playNext(): Boolean = this@PlaybackService.playNext()
+        override fun isPlaying(): Boolean = this@PlaybackService.isPlaying()
+        override fun getProgress(): Int = this@PlaybackService.getProgress()
+        override fun seekTo(progress: Int): Boolean = this@PlaybackService.seekTo(progress)
+        override fun getPlayingSong(): Song? = this@PlaybackService.getPlayingSong()
+        override fun getPlayList(): PlayList? = this@PlaybackService.getPlayList()
+        override fun setPlayMode(playMode: Int) {
+            this@PlaybackService.setPlayMode(PlayMode.values()[playMode])
+        }
+        override fun registerCallback(callback: IPlaybackCallback) {
+            remoteCallbackList.register(callback)
+        }
+        override fun unregisterCallback(callback: IPlaybackCallback) {
+            remoteCallbackList.unregister(callback)
+        }
+        override fun registerPlaybackCallback() {
+            this@PlaybackService.registerPlaybackCallback()
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -38,8 +67,12 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        Log.d(TAG, "onBind: wyj")
-        return LocalBinder()
+        Log.d(TAG, "onBind: wyj action:${intent.action}")
+        return if (intent.action == ACTION_BIND_REMOTE) {
+            aidlBinder
+        } else {
+            LocalBinder()
+        }
     }
 
     override fun onRebind(intent: Intent?) {
@@ -104,6 +137,7 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     }
 
     override fun onDestroy() {
+        remoteCallbackList.kill()
         releasePlayer()
         super.onDestroy()
     }
@@ -199,18 +233,37 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
 
     override fun onSwitchLast(last: Song) {
         showNotification()
+        notifyRemoteCallbacks { it.onSwitchLast(last) }
     }
 
     override fun onSwitchNext(next: Song) {
         showNotification()
+        notifyRemoteCallbacks { it.onSwitchNext(next) }
     }
 
     override fun onComplete(next: Song?) {
         showNotification()
+        notifyRemoteCallbacks { it.onComplete(next) }
     }
 
     override fun onPlayStatusChanged(isPlaying: Boolean) {
         showNotification()
+        notifyRemoteCallbacks { it.onPlayStatusChanged(isPlaying) }
+    }
+
+    private fun notifyRemoteCallbacks(action: (IPlaybackCallback) -> Unit) {
+        val count = remoteCallbackList.beginBroadcast()
+        try {
+            for (i in 0 until count) {
+                try {
+                    action(remoteCallbackList.getBroadcastItem(i))
+                } catch (e: Exception) {
+                    Log.e(TAG, "notifyRemoteCallbacks: ", e)
+                }
+            }
+        } finally {
+            remoteCallbackList.finishBroadcast()
+        }
     }
 
     // Notification

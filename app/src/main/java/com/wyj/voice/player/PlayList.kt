@@ -1,24 +1,11 @@
 package com.wyj.voice.player
 
-import com.wyj.voice.model.Folder
+import android.os.Parcel
+import android.os.Parcelable
 import com.wyj.voice.model.Song
 import java.util.*
 
-class PlayList() {
-    companion object {
-        // Play List: Favorite
-        const val NO_POSITION = -1
-        const val COLUMN_FAVORITE = "favorite"
-
-        fun fromFolder(folder: Folder): PlayList {
-            val playList = PlayList()
-            playList.name = folder.name
-            playList.songs = folder.songs
-            playList.numOfSongs = folder.numOfSongs
-            return playList
-        }
-    }
-
+class PlayList() : Parcelable {
     var id = 0
     var name: String? = null
 
@@ -165,5 +152,38 @@ class PlayList() {
             randomPlayIndex()
         }
         return randomIndex
+    }
+
+    // Parcelable
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readInt()
+        name = parcel.readString()
+        numOfSongs = parcel.readInt()
+        favorite = parcel.readInt() != 0
+        playingIndex = parcel.readInt()
+        parcel.createTypedArrayList(Song.CREATOR)?.let { songs = it.toMutableList() }
+        playMode = PlayMode.values()[parcel.readInt()]
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(id)
+        parcel.writeString(name)
+        parcel.writeInt(numOfSongs)
+        parcel.writeInt(if (favorite) 1 else 0)
+        parcel.writeInt(playingIndex)
+        parcel.writeTypedList(songs)
+        parcel.writeInt(playMode.ordinal)
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object {
+        const val NO_POSITION = -1
+
+        @JvmField
+        val CREATOR = object : Parcelable.Creator<PlayList> {
+            override fun createFromParcel(parcel: Parcel): PlayList = PlayList(parcel)
+            override fun newArray(size: Int): Array<PlayList?> = arrayOfNulls(size)
+        }
     }
 }
