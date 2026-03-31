@@ -109,8 +109,20 @@ class PlaybackService : Service(), IPlayback, IPlayback.Callback {
     }
 
     inner class LocalBinder : Binder() {
-        val service: PlaybackService
-            get() = this@PlaybackService
+        fun play(): Boolean = this@PlaybackService.play()
+        fun play(list: PlayList, startIndex: Int): Boolean = this@PlaybackService.play(list, startIndex)
+        fun pause(): Boolean = this@PlaybackService.pause()
+        fun playLast(): Boolean = this@PlaybackService.playLast()
+        fun playNext(): Boolean = this@PlaybackService.playNext()
+        fun isPlaying(): Boolean = this@PlaybackService.isPlaying()
+        fun getProgress(): Int = this@PlaybackService.getProgress()
+        fun seekTo(progress: Int): Boolean = this@PlaybackService.seekTo(progress)
+        fun getPlayingSong(): Song? = this@PlaybackService.getPlayingSong()
+        fun getPlayList(): PlayList? = this@PlaybackService.getPlayList()
+        fun setPlayMode(playMode: PlayMode) = this@PlaybackService.setPlayMode(playMode)
+        fun registerCallback(callback: IPlayback.Callback) = this@PlaybackService.registerCallback(callback)
+        fun unregisterCallback(callback: IPlayback.Callback) = this@PlaybackService.unregisterCallback(callback)
+        fun registerPlaybackCallback() = this@PlaybackService.registerPlaybackCallback()
     }
 
     override fun setPlayList(list: PlayList) {

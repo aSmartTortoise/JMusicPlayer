@@ -18,19 +18,19 @@ import com.wyj.voice.player.PlaybackService
 class MusicPlayerViewModel(application: Application) : AndroidViewModel(application) {
     private val context: Context get() = getApplication()
     private var isServiceBind = false
-    private var player: PlaybackService? = null
+    private var playService: PlaybackService.LocalBinder? = null
     private var registeredCallback: IPlayback.Callback? = null
     var serviceBoundLiveData = MutableLiveData<Boolean>()
     var playModeLiveData = MutableLiveData<PlayMode>()
 
     private val connection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            player = (service as PlaybackService.LocalBinder).service
+            playService = service as PlaybackService.LocalBinder
             serviceBoundLiveData.value = true
         }
 
         override fun onServiceDisconnected(className: ComponentName) {
-            player = null
+            playService = null
             serviceBoundLiveData.value = false
         }
     }
@@ -56,12 +56,12 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
 
     fun registerCallback(callback: IPlayback.Callback) {
         registeredCallback = callback
-        player?.registerCallback(callback)
+        playService?.registerCallback(callback)
     }
 
     fun unregisterCallback(callback: IPlayback.Callback) {
         registeredCallback = null
-        player?.unregisterCallback(callback)
+        playService?.unregisterCallback(callback)
     }
 
     fun playSong(song: Song) {
@@ -77,25 +77,25 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
 
     fun playSong(playList: PlayList, playIndex: Int) {
         playList.playMode = PreferenceManager.lastPlayMode(context)
-        player?.play(playList, playIndex)
+        playService?.play(playList, playIndex)
     }
 
-    fun getPlayingSong(): Song? = player?.getPlayingSong()
+    fun getPlayingSong(): Song? = playService?.getPlayingSong()
 
-    fun getPlayList(): PlayList? = player?.getPlayList()
+    fun getPlayList(): PlayList? = playService?.getPlayList()
 
-    fun hasPlayList(): Boolean = !player?.getPlayList()?.songs.isNullOrEmpty()
+    fun hasPlayList(): Boolean = !playService?.getPlayList()?.songs.isNullOrEmpty()
 
-    fun isPlaying(): Boolean = player?.isPlaying() ?: false
+    fun isPlaying(): Boolean = playService?.isPlaying() ?: false
 
     fun seekTo(progress: Int) {
-        player?.seekTo(progress)
+        playService?.seekTo(progress)
     }
 
-    fun getProgress(): Int = player?.getProgress() ?: 0
+    fun getProgress(): Int = playService?.getProgress() ?: 0
 
     fun onPlayToggleAction() {
-        player?.let {
+        playService?.let {
             if (it.isPlaying()) it.pause() else {
                 it.registerPlaybackCallback()
                 it.play()
@@ -103,12 +103,12 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun playLast() = player?.playLast()
+    fun playLast() = playService?.playLast()
 
-    fun playNext() = player?.playNext()
+    fun playNext() = playService?.playNext()
 
     fun onPlayModeToggleAction() {
-        player?.let {
+        playService?.let {
             val current = PreferenceManager.lastPlayMode(context)
             val newMode = PlayMode.switchNextMode(current)
             PreferenceManager.setPlayMode(context, newMode)
@@ -120,11 +120,11 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
     override fun onCleared() {
         super.onCleared()
         registeredCallback?.let {
-            player?.unregisterCallback(it)
+            playService?.unregisterCallback(it)
             registeredCallback = null
         }
         unbindPlaybackService()
-        player = null
+        playService = null
     }
 
     private fun unbindPlaybackService() {
