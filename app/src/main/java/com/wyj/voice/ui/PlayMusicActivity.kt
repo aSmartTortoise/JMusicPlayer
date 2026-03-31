@@ -36,7 +36,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
     MediaPlayer.OnCompletionListener {
     companion object {
         const val TAG = "PlayMusicActivity"
-        const val REQ_PER_CODE = 1
+        const val REQ_STORAGE_PERMISSION_CODE = 1
     }
 
     var mediaPlayer: MediaPlayer? = null
@@ -143,7 +143,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
                 ) {
                     ActivityCompat.requestPermissions(
                         this, arrayOf(permission),
-                        REQ_PER_CODE
+                        REQ_STORAGE_PERMISSION_CODE
                     )
                 } else {
                     if (musicViewModel.songs.value?.isNotEmpty() == true) {
@@ -252,7 +252,7 @@ class PlayMusicActivity : AppCompatActivity(), View.OnClickListener, MediaPlayer
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQ_PER_CODE) {
+        if (requestCode == REQ_STORAGE_PERMISSION_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: storage permission granted.")
             }

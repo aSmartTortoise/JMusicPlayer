@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
 
     companion object {
         private const val TAG = "MainActivity"
-        const val REQ_PER_CODE = 1
+        const val REQ_STORAGE_PERMISSION_CODE = 1
         const val REQ_NOTIFICATION_CODE = 2
     }
 
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                 if (!hasStoragePermission()) {
                     ActivityCompat.requestPermissions(this,
                         arrayOf(getStoragePermission()),
-                        REQ_PER_CODE
+                        REQ_STORAGE_PERMISSION_CODE
                     )
                 } else if (!musicViewModel.hasSongs()) {
                     musicViewModel.getLocalSongs()
@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQ_PER_CODE) {
+        if (requestCode == REQ_STORAGE_PERMISSION_CODE) {
             if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 LogUtils.d("$TAG onRequestPermissionsResult: storage permission not granted.")
             } else {
