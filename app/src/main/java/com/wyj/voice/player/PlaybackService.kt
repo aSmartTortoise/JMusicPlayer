@@ -17,6 +17,16 @@ import com.wyj.voice.model.Song
 import com.wyj.voice.ui.TrampolineActivity
 import com.wyj.voice.utils.AlbumUtils
 
+/**
+ *  https://www.cnblogs.com/rustfisher/p/11568524.html
+ *
+ *  https://blog.csdn.net/qq_38436214/article/details/87996625
+ *  https://blog.csdn.net/qq_38436214/article/details/88040066
+ *
+ *  下载mp3
+ *  https://tool.liumingye.cn/music/#/artist/zlrQ
+ *
+ */
 class PlaybackService : Service(), IPlayback, IPlayback.Callback {
 
     companion object {
