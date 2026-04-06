@@ -69,8 +69,8 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.15.0'
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"//lifecycleScope, coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3" // coroutine
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"//lifecycleScope, viewModelScope
     implementation "androidx.activity:activity-ktx:1.7.2" // androidx
 
     implementation 'com.blankj:utilcodex:1.31.1'

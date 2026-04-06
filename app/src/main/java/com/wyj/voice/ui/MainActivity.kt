@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.LogUtils
 import com.wyj.voice.R
+import com.wyj.voice.constant.RequestCode
 import com.wyj.voice.databinding.ActivityMainBinding
 import com.wyj.voice.model.Song
 import com.wyj.voice.player.IPlayback
@@ -33,8 +34,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
 
     companion object {
         private const val TAG = "MainActivity"
-        const val REQ_STORAGE_PERMISSION_CODE = 1
-        const val REQ_NOTIFICATION_CODE = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,7 +88,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                 if (!hasStoragePermission()) {
                     ActivityCompat.requestPermissions(this,
                         arrayOf(getStoragePermission()),
-                        REQ_STORAGE_PERMISSION_CODE
+                        RequestCode.STORAGE_PERMISSION
                     )
                 } else if (!musicViewModel.hasSongs()) {
                     musicViewModel.getLocalSongs()
@@ -150,7 +149,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
                 != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    REQ_NOTIFICATION_CODE)
+                    RequestCode.NOTIFICATION)
             }
         }
         playerViewModel = ViewModelProvider(this)[MusicPlayerViewModel::class.java].apply {
@@ -183,7 +182,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MusicPlayerBar.P
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQ_STORAGE_PERMISSION_CODE) {
+        if (requestCode == RequestCode.STORAGE_PERMISSION) {
             if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 LogUtils.d("$TAG onRequestPermissionsResult: storage permission not granted.")
             } else {

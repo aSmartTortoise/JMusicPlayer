@@ -20,6 +20,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.wyj.voice.R
+import com.wyj.voice.constant.RequestCode
 import com.wyj.voice.databinding.ActivityMusicPlayerBinding
 import com.wyj.voice.manager.PreferenceManager
 import com.wyj.voice.model.Song
@@ -40,9 +41,7 @@ import kotlinx.coroutines.flow.*
 class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     companion object {
         const val TAG = "MusicPlayerActivity"
-        const val REQ_NOTIFICATION_CODE = 2
     }
-    private lateinit var musicViewModel: LocalMusicViewModel
     private lateinit var playerViewModel: MusicPlayerViewModel
     private lateinit var dataBinding: ActivityMusicPlayerBinding
     private var playProgressJob: Job? = null
@@ -63,11 +62,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
             0.5f
         )
         dataBinding.ivBg.background = gradientBackgroundDrawable
-        musicViewModel = ViewModelProvider(this)[LocalMusicViewModel::class.java].apply {
-            songs.observe(this@MusicPlayerActivity) {
-            }
-            getLocalSongs()
-        }
         subscribeService()
         initListener()
     }
@@ -107,7 +101,7 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
                 != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    REQ_NOTIFICATION_CODE)
+                    RequestCode.NOTIFICATION)
             }
         }
         playerViewModel = ViewModelProvider(this)[MusicPlayerViewModel::class.java].apply {
@@ -315,7 +309,6 @@ class MusicPlayerActivity : AppCompatActivity(), IPlayback.Callback {
     }
 
     override fun onDestroy() {
-        cancelPlayProgressJob()
         playerViewModel.unregisterCallback(this)
         super.onDestroy()
     }

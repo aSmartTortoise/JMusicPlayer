@@ -6,18 +6,18 @@ import androidx.annotation.FloatRange
 
 object GradientUtils {
     fun create(
-        @ColorInt startColor: Int, @ColorInt endColor: Int, radius: Int,
+        @ColorInt startColor: Int,
+        @ColorInt endColor: Int,
+        radius: Int,
         @FloatRange(from = 0.0, to = 1.0) centerX: Float,
         @FloatRange(from = 0.0, to = 1.0) centerY: Float
     ): GradientDrawable {
-        val gradientDrawable = GradientDrawable()
-        gradientDrawable.colors = intArrayOf(
-            startColor,
-            endColor
-        )
-        gradientDrawable.gradientType = GradientDrawable.RADIAL_GRADIENT
-        gradientDrawable.gradientRadius = radius.toFloat()
-        gradientDrawable.setGradientCenter(centerX, centerY)
-        return gradientDrawable
+        val colorArray = intArrayOf(startColor, endColor)
+        return GradientDrawable().apply {
+            colors = colorArray
+            gradientType = GradientDrawable.RADIAL_GRADIENT
+            gradientRadius = radius.toFloat()
+            setGradientCenter(centerX, centerY)
+        }
     }
 }
