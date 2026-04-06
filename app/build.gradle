@@ -58,16 +58,13 @@ android {
 dependencies {
     implementation project(':lib_framework')
 
-    implementation depLibs.constraintlayout
     implementation depLibs.rxjava2
     implementation depLibs.rxandroid2
-    implementation depLibs.androidxMedia
     implementation(depLibs.glide) {
         exclude group: "com.android.support"
     }
     kapt depLibs.glideCompiler
     implementation depLibs.glideTransformations
-    implementation depLibs.activityKtx
 
     testImplementation depLibs.junit
     androidTestImplementation depLibs.extJunit

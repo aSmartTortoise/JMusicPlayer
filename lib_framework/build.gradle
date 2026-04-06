@@ -43,6 +43,8 @@ dependencies {
     api depLibs.coreKtx
     api depLibs.appcompat
     api depLibs.material
+    api depLibs.constraintlayout
+    api depLibs.androidxMedia
 
     testImplementation depLibs.junit
     androidTestImplementation depLibs.extJunit
@@ -50,6 +52,7 @@ dependencies {
 
     api depLibs.coroutinesAndroid
     api depLibs.lifecycleRuntimeKtx
+    api depLibs.activityKtx
 
     api depLibs.utilcodex
 //    api depLibs.autoSize
