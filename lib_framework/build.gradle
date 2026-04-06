@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+def android_config = rootProject.ext.android
+def depLibs = rootProject.ext.depsLibs
+
+android {
+    namespace 'com.wyj.app.framework'
+    compileSdk android_config.compileSdk
+
+    defaultConfig {
+        minSdk android_config.minSdk
+        targetSdk android_config.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        dataBinding = true
+        viewBinding = true
+    }
+}
+
+dependencies {
+
+    implementation depLibs.coreKtx
+    implementation depLibs.appcompat
+    implementation depLibs.material
+    implementation depLibs.coroutinesAndroid
+    implementation depLibs.lifecycleRuntimeKtx
+    testImplementation depLibs.junit
+    androidTestImplementation depLibs.extJunit
+    androidTestImplementation depLibs.espressoCore
+
+    api depLibs.utilcodex
+//    api depLibs.autoSize
+    api depLibs.gson
+    api depLibs.aroutreApi
+    api 'com.github.hufeiyang.Android-AppLifecycleMgr:applifecycle-api:1.0.4'
+}

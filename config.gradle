@@ -1,0 +1,126 @@
+ext {
+
+    android = [
+            applicationId    : "xxx",
+            //使用exoPlayer编译版本需要到33，而33中有bug,xml写代码没有代码提示
+            compileSdk       : 33,
+            buildToolsVersion: '33.0.3',
+            minSdk           : 20,
+            targetSdk        : 33,
+
+            versionCode      : 14004,
+            versionName      : "1.40.04",
+    ]
+
+    dependVersion = [
+            multidexVersion       : '2.0.1',
+            retrofitVersion       : '2.9.0',
+            retrofitGsonVersion   : '2.4.0',
+            okhttp3LogVersion     : '3.11.0',
+            gsonVersion           : '2.10.1',
+            mmkvVersion           : '1.2.15',
+            refreshVersion        : '2.0.5',
+            glideVersion          : '4.15.0',
+            flexboxVersion        : '3.0.0',
+            aroutreApiVersion     : '1.5.2',
+            arouterCompilerVersion: '1.5.2',
+            tbssdkVersion         : '44132',
+            exoPlayerVersion      : '2.18.5',
+            permissionsVersion    : '0.12',
+            roomVersion           : '2.5.0',
+            rxjavaVersion         : '3.1.6',
+            rxandroidVersion      : '3.0.2',
+            cameraxVersion        : '1.3.0-alpha04',
+            coroutinesVersion     : '1.7.3',
+            lifecycleRuntimeVersion: '2.6.2',
+            activityKtxVersion    : '1.7.2',
+            utilcodexVersion      : '1.31.1',
+            autoSizeVersion       : 'v1.2.1',
+            appLifeApiVersion     : '1.0.4',
+            appLifeCompilerVersion: '1.0.4',
+            pagVersion            : '4.3.50',
+            markwonVersion        : '4.6.2',
+            voiceViewCMDVersion   : '1.0-20240827.012742-20',
+            voiceExportVersion    : '1.0-20240829.062052-7'
+    ]
+
+    depsLibs = [
+            coreKtx           : 'androidx.core:core-ktx:1.7.0',
+            appcompat         : 'androidx.appcompat:appcompat:1.4.1',
+            material          : 'com.google.android.material:material:1.5.0',
+            constraintlayout  : 'androidx.constraintlayout:constraintlayout:2.1.3',
+            liveDataKtx       : 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1',
+            viewModelKtx      : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1',
+            navigationFragment: 'androidx.navigation:navigation-fragment-ktx:2.3.5',
+            navigationUI      : 'androidx.navigation:navigation-ui-ktx:2.3.5',
+            lifecycleCommon   : 'androidx.lifecycle:lifecycle-common:2.5.0-beta01',
+
+            //room数据库
+            roomKtx           : "androidx.room:room-ktx:${dependVersion["roomVersion"]}",
+            roomCompiler      : "androidx.room:room-compiler:${dependVersion["roomVersion"]}",
+
+            junit             : 'junit:junit:4.13.2',
+            extJunit          : 'androidx.test.ext:junit:1.1.3',
+            espressoCore      : 'androidx.test.espresso:espresso-core:3.4.0',
+
+            multidex          : "androidx.multidex:multidex:${dependVersion["multidexVersion"]}",
+            //网络请求
+            retrofit2         : "com.squareup.retrofit2:retrofit:${dependVersion["retrofitVersion"]}",
+            retrofit2Gson     : "com.squareup.retrofit2:converter-gson:${dependVersion["retrofitGsonVersion"]}",
+            //日志打印
+            loggingInterceptor: "com.squareup.okhttp3:logging-interceptor:${dependVersion["okhttp3LogVersion"]}",
+
+            gson              : "com.google.code.gson:gson:${dependVersion["gsonVersion"]}",
+//            xlog              : "com.tencent.mars:mars-xlog:1.2.5",
+            //数据存储
+            mmkv              : "com.tencent:mmkv:${dependVersion["mmkvVersion"]}",
+
+            //下拉刷新
+            refreshLayout     : "io.github.scwang90:refresh-layout-kernel:${dependVersion["refreshVersion"]}",
+            refreshHeader     : "io.github.scwang90:refresh-header-classics:${dependVersion["refreshVersion"]}",
+            refreshFooter     : "io.github.scwang90:refresh-footer-classics:${dependVersion["refreshVersion"]}",
+
+            //图片加载
+            glide             : "com.github.bumptech.glide:glide:${dependVersion["glideVersion"]}",
+            glideCompiler     : "com.github.bumptech.glide:compiler:${dependVersion["glideVersion"]}",
+
+            //流式布局
+            flexbox           : "com.google.android.flexbox:flexbox:${dependVersion["flexboxVersion"]}",
+//
+            //路由
+            aroutreApi        : "com.alibaba:arouter-api:${dependVersion["aroutreApiVersion"]}",
+            arouterCompiler   : "com.alibaba:arouter-compiler:${dependVersion["arouterCompilerVersion"]}",
+
+            //腾讯X5
+            tbssdk            : "com.tencent.tbs:tbssdk:${dependVersion["tbssdkVersion"]}",
+
+            //ExoPlayer播放器
+            exoPlayer         : "com.google.android.exoplayer:exoplayer:${dependVersion["exoPlayerVersion"]}",
+
+            //相机
+//            cameraX           : "androidx.camera:camera-camera2:${dependVersion["cameraxVersion"]}",
+
+            //权限处理
+            rxPermission      : "com.github.tbruyelle:rxpermissions:${dependVersion["permissionsVersion"]}",
+            rxjava            : "io.reactivex.rxjava3:rxjava:${dependVersion["rxjavaVersion"]}",
+            rxandroid         : "io.reactivex.rxjava3:rxandroid:${dependVersion["rxandroidVersion"]}",
+            utilcodex         : "com.blankj:utilcodex:${dependVersion["utilcodexVersion"]}",
+            autoSize          : "com.github.JessYanCoding:AndroidAutoSize:${dependVersion["autoSizeVersion"]}",
+            appLifeApi        : "com.github.hufeiyang.Android-AppLifecycleMgr:applifecycle-api:${dependVersion["appLifeApiVersion"]}",
+            appLifeCompiler   : "com.github.hufeiyang.Android-AppLifecycleMgr:applifecycle-compiler:${dependVersion["appLifeCompilerVersion"]}",
+            pag               : "com.tencent.tav:libpag:${dependVersion["pagVersion"]}",
+            markwonCore       : "io.noties.markwon:core:${dependVersion["markwonVersion"]}",
+            markwonImage      : "io.noties.markwon:image:${dependVersion["markwonVersion"]}",
+            markwonHtml       : "io.noties.markwon:html:${dependVersion["markwonVersion"]}",
+            markwonTable      : "io.noties.markwon:ext-tables:${dependVersion["markwonVersion"]}",
+            markwonStrikeThrough: "io.noties.markwon:ext-strikethrough:${dependVersion["markwonVersion"]}",
+            markwonImageGlide : "io.noties.markwon:image-glide:${dependVersion["markwonVersion"]}",
+            voiceViewCMD      : "com.voyah.ai.voice.sdk:viewcmd-sdk:${dependVersion["voiceViewCMDVersion"]}",
+            voiceExport       : "com.voyah.ai.voice.sdk:voice-export-sdk:${dependVersion["voiceExportVersion"]}",
+
+            //协程 & lifecycle（统一版本，避免传递依赖引入旧版本）
+            coroutinesAndroid : "org.jetbrains.kotlinx:kotlinx-coroutines-android:${dependVersion["coroutinesVersion"]}",
+            lifecycleRuntimeKtx: "androidx.lifecycle:lifecycle-runtime-ktx:${dependVersion["lifecycleRuntimeVersion"]}",
+            activityKtx       : "androidx.activity:activity-ktx:${dependVersion["activityKtxVersion"]}"
+    ]
+}
