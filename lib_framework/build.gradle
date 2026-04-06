@@ -40,14 +40,16 @@ android {
 
 dependencies {
 
-    implementation depLibs.coreKtx
-    implementation depLibs.appcompat
-    implementation depLibs.material
-    implementation depLibs.coroutinesAndroid
-    implementation depLibs.lifecycleRuntimeKtx
+    api depLibs.coreKtx
+    api depLibs.appcompat
+    api depLibs.material
+
     testImplementation depLibs.junit
     androidTestImplementation depLibs.extJunit
     androidTestImplementation depLibs.espressoCore
+
+    api depLibs.coroutinesAndroid
+    api depLibs.lifecycleRuntimeKtx
 
     api depLibs.utilcodex
 //    api depLibs.autoSize
